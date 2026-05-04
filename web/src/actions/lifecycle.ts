@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
-import { AlterarStatusSchema, ComentarioSchema, LIFECYCLE_STATUSES } from '@/lib/definitions'
+import { AlterarStatusSchema, ComentarioSchema } from '@/lib/definitions'
 import { enviarEmail, htmlMudancaStatus } from '@/lib/email'
 
 // ─── Status ───────────────────────────────────────────────────────
@@ -109,19 +109,7 @@ export async function excluirComentario(id: string) {
   revalidatePath(`/dashboard/processos/${comentario.megaProcessoId}`)
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────
 
-export const STATUS_TRANSITIONS: Record<string, string[]> = {
-  Rascunho: ['EmRevisao', 'Arquivado'],
-  EmRevisao: ['Aprovado', 'Rascunho'],
-  Aprovado: ['Publicado', 'EmRevisao'],
-  Publicado: ['Arquivado', 'EmRevisao'],
-  Arquivado: ['Rascunho'],
-}
-
-export function proximosStatus(atual: string): string[] {
-  return STATUS_TRANSITIONS[atual] ?? LIFECYCLE_STATUSES.slice()
-}
 
 export async function adicionarComentarioForm(formData: FormData): Promise<void> {
   await adicionarComentario(undefined, formData)
