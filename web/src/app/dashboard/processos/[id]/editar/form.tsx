@@ -3,16 +3,22 @@
 import { useActionState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { atualizarMegaProcesso } from '@/actions/processos'
+import { useToast } from '@/components/ui/toast'
 import type { MegaProcesso } from '@prisma/client'
 
 export default function EditarMegaProcessoForm({ megaProcesso }: { megaProcesso: MegaProcesso }) {
   const router = useRouter()
+  const { show } = useToast()
   const action = atualizarMegaProcesso.bind(null, megaProcesso.id)
   const [state, formAction, pending] = useActionState(action, undefined)
 
   useEffect(() => {
-    if (state && 'success' in state) router.push(`/dashboard/processos/${megaProcesso.id}`)
-  }, [state, router, megaProcesso.id])
+    if (state && 'success' in state) {
+      show('Mega-Processo atualizado!')
+      router.push(`/dashboard/processos/${megaProcesso.id}`)
+    }
+    if (state && 'errors' in state) show('Corrija os erros no formulário.', 'error')
+  }, [state, router, megaProcesso.id, show])
 
   return (
     <form action={formAction} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">

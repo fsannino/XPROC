@@ -1,6 +1,7 @@
 import 'server-only'
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
+import { prisma } from '@/lib/prisma'
 
 const key = new TextEncoder().encode(
   process.env.NEXTAUTH_SECRET || 'fallback-dev-secret-change-in-production'
@@ -53,5 +54,14 @@ export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies()
   const token = cookieStore.get('session')?.value
   if (!token) return null
-  return decrypt(token)
+  const payload = await decrypt(token)
+  if (!payload) return null
+
+  const user = await prisma.usuario.findUnique({
+    where: { id: payload.userId, ativo: true },
+    select: { id: true },
+  })
+  if (!user) return null
+
+  return payload
 }

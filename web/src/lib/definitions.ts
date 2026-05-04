@@ -42,6 +42,11 @@ export const EmpresaSchema = z.object({
   nome: z.string().min(2).max(150).trim(),
 })
 
+export const CenarioSchema = z.object({
+  descricao: z.string().min(2).max(150).trim(),
+  situacao: z.string().max(20).optional().or(z.literal('')),
+})
+
 export type FormState<T = Record<string, string[]>> =
   | { errors?: Partial<Record<keyof T, string[]>>; message?: string }
   | undefined
