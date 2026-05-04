@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { excluirEmpresa } from '@/actions/transacoes'
 import NovaEmpresaForm from './form'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 export default async function EmpresasPage() {
   const empresas = await prisma.empresaUnidade.findMany({
@@ -39,11 +40,7 @@ export default async function EmpresasPage() {
                   <td className="px-4 py-3 font-medium text-gray-900">{e.nome}</td>
                   <td className="px-4 py-3 text-center text-gray-600">{e._count.subProcessos}</td>
                   <td className="px-4 py-3 text-right">
-                    <form action={excluirEmpresa.bind(null, e.id)} className="inline">
-                      <button type="submit" className="text-red-600 hover:text-red-800 font-medium text-xs">
-                        Excluir
-                      </button>
-                    </form>
+                    <DeleteButton action={excluirEmpresa.bind(null, e.id)} confirmText={`Excluir empresa "${e.nome}"?`} />
                   </td>
                 </tr>
               ))}

@@ -47,6 +47,15 @@ export const CenarioSchema = z.object({
   situacao: z.string().max(20).optional().or(z.literal('')),
 })
 
+export const TrocaSenhaSchema = z.object({
+  senhaAtual: z.string().min(1, 'Senha atual é obrigatória.'),
+  novaSenha: z.string().min(6, 'Nova senha deve ter pelo menos 6 caracteres.'),
+  confirmar: z.string().min(1),
+}).refine((d) => d.novaSenha === d.confirmar, {
+  message: 'As senhas não coincidem.',
+  path: ['confirmar'],
+})
+
 export type FormState<T = Record<string, string[]>> =
   | { errors?: Partial<Record<keyof T, string[]>>; message?: string }
   | undefined

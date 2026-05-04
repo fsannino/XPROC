@@ -1,9 +1,14 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { alternarStatusUsuario } from '@/actions/usuarios'
+import { SearchInput } from '@/components/ui/search'
 
-export default async function UsuariosPage() {
+export default async function UsuariosPage({ searchParams }: { searchParams: Promise<{ busca?: string }> }) {
+  const { busca } = await searchParams
   const usuarios = await prisma.usuario.findMany({
+    where: busca
+      ? { OR: [{ nome: { contains: busca, mode: 'insensitive' } }, { codigo: { contains: busca, mode: 'insensitive' } }] }
+      : undefined,
     orderBy: { nome: 'asc' },
     include: { _count: { select: { acessos: true } } },
   })
@@ -12,12 +17,15 @@ export default async function UsuariosPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Usuários</h1>
-        <Link
-          href="/dashboard/usuarios/novo"
-          className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800"
-        >
-          + Novo Usuário
-        </Link>
+        <div className="flex items-center gap-3">
+          <SearchInput placeholder="Buscar usuário..." />
+          <Link
+            href="/dashboard/usuarios/novo"
+            className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800"
+          >
+            + Novo Usuário
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
