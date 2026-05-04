@@ -4,6 +4,9 @@ import { cookies } from 'next/headers'
 
 const publicRoutes = ['/login']
 
+// Rotas que exigem categoria 'A' (admin)
+const adminRoutes = ['/dashboard/usuarios', '/dashboard/modulos']
+
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
   const isPublic = publicRoutes.includes(path)
@@ -18,6 +21,10 @@ export async function proxy(req: NextRequest) {
 
   if (session && isPublic) {
     return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
+  }
+
+  if (session && adminRoutes.some((r) => path.startsWith(r)) && session.categoria !== 'A') {
+    return NextResponse.redirect(new URL('/dashboard?acesso=negado', req.nextUrl))
   }
 
   return NextResponse.next()

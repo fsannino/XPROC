@@ -1,18 +1,30 @@
+export const metadata = { title: 'Processos' }
+
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { excluirMegaProcesso } from '@/actions/processos'
 import { DeleteButton } from '@/components/ui/delete-button'
 import { SearchInput } from '@/components/ui/search'
+import { Pagination } from '@/components/ui/pagination'
+import { ExportButton } from '@/components/ui/export-button'
 
-export default async function ProcessosPage({ searchParams }: { searchParams: Promise<{ busca?: string }> }) {
-  const { busca } = await searchParams
-  const megaProcessos = await prisma.megaProcesso.findMany({
-    where: busca ? { descricao: { contains: busca, mode: 'insensitive' } } : undefined,
-    orderBy: { id: 'asc' },
-    include: {
-      _count: { select: { processos: true, acessos: true } },
-    },
-  })
+const PER_PAGE = 20
+
+export default async function ProcessosPage({ searchParams }: { searchParams: Promise<{ busca?: string; pagina?: string }> }) {
+  const { busca, pagina } = await searchParams
+  const page = Math.max(1, Number(pagina) || 1)
+  const where = busca ? { descricao: { contains: busca, mode: 'insensitive' as const } } : undefined
+
+  const [total, megaProcessos] = await Promise.all([
+    prisma.megaProcesso.count({ where }),
+    prisma.megaProcesso.findMany({
+      where,
+      orderBy: { id: 'asc' },
+      include: { _count: { select: { processos: true, acessos: true } } },
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+    }),
+  ])
 
   return (
     <div>
@@ -20,6 +32,7 @@ export default async function ProcessosPage({ searchParams }: { searchParams: Pr
         <h1 className="text-2xl font-bold text-gray-900">Processos</h1>
         <div className="flex items-center gap-3">
           <SearchInput placeholder="Buscar mega-processo..." />
+          <ExportButton tipo="processos" />
           <Link
             href="/dashboard/processos/novo"
             className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors"
@@ -83,6 +96,7 @@ export default async function ProcessosPage({ searchParams }: { searchParams: Pr
             ))}
           </tbody>
         </table>
+        <Pagination page={page} total={total} perPage={PER_PAGE} basePath="/dashboard/processos" busca={busca} />
       </div>
     </div>
   )

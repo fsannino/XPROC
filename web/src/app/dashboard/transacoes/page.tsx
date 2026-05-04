@@ -1,19 +1,32 @@
+export const metadata = { title: 'Transações' }
+
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { excluirTransacao } from '@/actions/transacoes'
 import { DeleteButton } from '@/components/ui/delete-button'
 import { SearchInput } from '@/components/ui/search'
+import { Pagination } from '@/components/ui/pagination'
+import { ExportButton } from '@/components/ui/export-button'
 
-export default async function TransacoesPage({ searchParams }: { searchParams: Promise<{ busca?: string }> }) {
-  const { busca } = await searchParams
-  const transacoes = await prisma.transacao.findMany({
-    where: busca
-      ? { OR: [{ id: { contains: busca, mode: 'insensitive' } }, { descricao: { contains: busca, mode: 'insensitive' } }] }
-      : undefined,
-    orderBy: { id: 'asc' },
-    include: { _count: { select: { megaProcessos: true } } },
-    take: 200,
-  })
+const PER_PAGE = 30
+
+export default async function TransacoesPage({ searchParams }: { searchParams: Promise<{ busca?: string; pagina?: string }> }) {
+  const { busca, pagina } = await searchParams
+  const page = Math.max(1, Number(pagina) || 1)
+  const where = busca
+    ? { OR: [{ id: { contains: busca, mode: 'insensitive' as const } }, { descricao: { contains: busca, mode: 'insensitive' as const } }] }
+    : undefined
+
+  const [total, transacoes] = await Promise.all([
+    prisma.transacao.count({ where }),
+    prisma.transacao.findMany({
+      where,
+      orderBy: { id: 'asc' },
+      include: { _count: { select: { megaProcessos: true } } },
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+    }),
+  ])
 
   return (
     <div>
@@ -21,6 +34,7 @@ export default async function TransacoesPage({ searchParams }: { searchParams: P
         <h1 className="text-2xl font-bold text-gray-900">Transações</h1>
         <div className="flex items-center gap-3">
           <SearchInput placeholder="Buscar transação..." />
+          <ExportButton tipo="transacoes" />
           <Link
             href="/dashboard/transacoes/nova"
             className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800"
@@ -54,12 +68,16 @@ export default async function TransacoesPage({ searchParams }: { searchParams: P
                 <td className="px-4 py-3 text-gray-800">{t.descricao || '—'}</td>
                 <td className="px-4 py-3 text-center text-gray-600">{t._count.megaProcessos}</td>
                 <td className="px-4 py-3 text-right">
+                  <Link href={`/dashboard/transacoes/${t.id}/editar`} className="text-amber-600 hover:text-amber-800 font-medium text-xs mr-2">
+                    Editar
+                  </Link>
                   <DeleteButton action={excluirTransacao.bind(null, t.id)} confirmText={`Excluir transação "${t.id}"?`} />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        <Pagination page={page} total={total} perPage={PER_PAGE} basePath="/dashboard/transacoes" busca={busca} />
       </div>
     </div>
   )

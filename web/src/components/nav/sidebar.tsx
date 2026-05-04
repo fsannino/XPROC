@@ -10,6 +10,7 @@ const navItems = [
   { href: '/dashboard/transacoes', label: 'Transações', icon: '💱' },
   { href: '/dashboard/cenarios', label: 'Cenários', icon: '📋' },
   { href: '/dashboard/empresas', label: 'Empresas', icon: '🏢' },
+  { href: '/dashboard/modulos', label: 'Módulos', icon: '📦' },
   { href: '/dashboard/usuarios', label: 'Usuários', icon: '👥' },
 ]
 
