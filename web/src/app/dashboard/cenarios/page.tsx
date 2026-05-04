@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+import { excluirCenario } from '@/actions/cenarios'
+import NovoCenarioForm from './form'
 
 export default async function CenariosPage() {
   const cenarios = await prisma.cenario.findMany({
@@ -12,34 +14,44 @@ export default async function CenariosPage() {
         <h1 className="text-2xl font-bold text-gray-900">Cenários</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Cód.</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Descrição</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Situação</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-600">Transações</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {cenarios.length === 0 && (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <NovoCenarioForm />
+
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <td colSpan={4} className="text-center py-8 text-gray-400">
-                  Nenhum cenário cadastrado.
-                </td>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Descrição</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Situação</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600">Transações</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-600">Ações</th>
               </tr>
-            )}
-            {cenarios.map((c) => (
-              <tr key={c.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-gray-500">{c.id}</td>
-                <td className="px-4 py-3 font-medium text-gray-900">{c.descricao}</td>
-                <td className="px-4 py-3 text-gray-500">{c.situacao || '—'}</td>
-                <td className="px-4 py-3 text-center text-gray-600">{c._count.transacoes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {cenarios.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="text-center py-8 text-gray-400">
+                    Nenhum cenário cadastrado.
+                  </td>
+                </tr>
+              )}
+              {cenarios.map((c) => (
+                <tr key={c.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium text-gray-900">{c.descricao}</td>
+                  <td className="px-4 py-3 text-gray-500">{c.situacao || '—'}</td>
+                  <td className="px-4 py-3 text-center text-gray-600">{c._count.transacoes}</td>
+                  <td className="px-4 py-3 text-right">
+                    <form action={excluirCenario.bind(null, c.id)} className="inline">
+                      <button type="submit" className="text-red-600 hover:text-red-800 text-xs font-medium">
+                        Excluir
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
