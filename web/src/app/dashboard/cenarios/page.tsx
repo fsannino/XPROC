@@ -1,3 +1,5 @@
+export const metadata = { title: 'Cenários' }
+
 import { prisma } from '@/lib/prisma'
 import { excluirCenario } from '@/actions/cenarios'
 import NovoCenarioForm from './form'

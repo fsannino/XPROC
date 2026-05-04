@@ -1,3 +1,5 @@
+export const metadata = { title: 'Empresas' }
+
 import { prisma } from '@/lib/prisma'
 import { excluirEmpresa } from '@/actions/transacoes'
 import NovaEmpresaForm from './form'

@@ -1,17 +1,31 @@
+export const metadata = { title: 'Usuários' }
+
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { alternarStatusUsuario } from '@/actions/usuarios'
 import { SearchInput } from '@/components/ui/search'
+import { Pagination } from '@/components/ui/pagination'
+import { ExportButton } from '@/components/ui/export-button'
 
-export default async function UsuariosPage({ searchParams }: { searchParams: Promise<{ busca?: string }> }) {
-  const { busca } = await searchParams
-  const usuarios = await prisma.usuario.findMany({
-    where: busca
-      ? { OR: [{ nome: { contains: busca, mode: 'insensitive' } }, { codigo: { contains: busca, mode: 'insensitive' } }] }
-      : undefined,
-    orderBy: { nome: 'asc' },
-    include: { _count: { select: { acessos: true } } },
-  })
+const PER_PAGE = 25
+
+export default async function UsuariosPage({ searchParams }: { searchParams: Promise<{ busca?: string; pagina?: string }> }) {
+  const { busca, pagina } = await searchParams
+  const page = Math.max(1, Number(pagina) || 1)
+  const where = busca
+    ? { OR: [{ nome: { contains: busca, mode: 'insensitive' as const } }, { codigo: { contains: busca, mode: 'insensitive' as const } }] }
+    : undefined
+
+  const [total, usuarios] = await Promise.all([
+    prisma.usuario.count({ where }),
+    prisma.usuario.findMany({
+      where,
+      orderBy: { nome: 'asc' },
+      include: { _count: { select: { acessos: true } } },
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+    }),
+  ])
 
   return (
     <div>
@@ -19,6 +33,7 @@ export default async function UsuariosPage({ searchParams }: { searchParams: Pro
         <h1 className="text-2xl font-bold text-gray-900">Usuários</h1>
         <div className="flex items-center gap-3">
           <SearchInput placeholder="Buscar usuário..." />
+          <ExportButton tipo="usuarios" />
           <Link
             href="/dashboard/usuarios/novo"
             className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800"
@@ -64,20 +79,11 @@ export default async function UsuariosPage({ searchParams }: { searchParams: Pro
                   )}
                 </td>
                 <td className="px-4 py-3 text-right space-x-2">
-                  <Link
-                    href={`/dashboard/usuarios/${u.id}`}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
+                  <Link href={`/dashboard/usuarios/${u.id}`} className="text-blue-600 hover:text-blue-800 font-medium text-sm">
                     Acessos
                   </Link>
-                  <form
-                    action={alternarStatusUsuario.bind(null, u.id, !u.ativo)}
-                    className="inline"
-                  >
-                    <button
-                      type="submit"
-                      className={`font-medium ${u.ativo ? 'text-amber-600 hover:text-amber-800' : 'text-green-600 hover:text-green-800'}`}
-                    >
+                  <form action={alternarStatusUsuario.bind(null, u.id, !u.ativo)} className="inline">
+                    <button type="submit" className={`font-medium text-sm ${u.ativo ? 'text-amber-600 hover:text-amber-800' : 'text-green-600 hover:text-green-800'}`}>
                       {u.ativo ? 'Desativar' : 'Ativar'}
                     </button>
                   </form>
@@ -86,6 +92,7 @@ export default async function UsuariosPage({ searchParams }: { searchParams: Pro
             ))}
           </tbody>
         </table>
+        <Pagination page={page} total={total} perPage={PER_PAGE} basePath="/dashboard/usuarios" busca={busca} />
       </div>
     </div>
   )

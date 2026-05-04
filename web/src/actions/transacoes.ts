@@ -19,6 +19,13 @@ export async function criarTransacao(_state: unknown, formData: FormData) {
   return { success: true }
 }
 
+export async function atualizarTransacao(id: string, _state: unknown, formData: FormData) {
+  const descricao = (formData.get('descricao') as string)?.trim() || null
+  await prisma.transacao.update({ where: { id }, data: { descricao } })
+  revalidatePath('/dashboard/transacoes')
+  return { success: true }
+}
+
 export async function excluirTransacao(id: string) {
   await prisma.transacao.delete({ where: { id } })
   revalidatePath('/dashboard/transacoes')

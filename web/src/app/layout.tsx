@@ -5,7 +5,7 @@ import './globals.css'
 const geist = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'XPROC — Gestão de Processos',
+  title: { default: 'XPROC', template: '%s — XPROC' },
   description: 'Sistema de Gerenciamento de Processos Corporativos',
 }
 
