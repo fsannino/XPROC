@@ -18,12 +18,16 @@ export const MegaProcessoSchema = z.object({
   abreviacao: z.string().max(4).optional().or(z.literal('')),
   descricaoLonga: z.string().optional().or(z.literal('')),
   bloqueado: z.boolean().optional(),
+  responsavelId: z.string().optional().or(z.literal('')),
 })
 
 export const ProcessoSchema = z.object({
   megaProcessoId: z.number().int().positive(),
   descricao: z.string().min(2).max(150).trim(),
   sequencia: z.number().int().optional(),
+  tempoMedioCiclo: z.number().positive().optional(),
+  custoEstimado: z.number().positive().optional(),
+  volumeMensal: z.number().int().positive().optional(),
 })
 
 export const SubProcessoSchema = z.object({
@@ -54,6 +58,34 @@ export const TrocaSenhaSchema = z.object({
 }).refine((d) => d.novaSenha === d.confirmar, {
   message: 'As senhas não coincidem.',
   path: ['confirmar'],
+})
+
+export const LIFECYCLE_STATUSES = ['Rascunho', 'EmRevisao', 'Aprovado', 'Publicado', 'Arquivado'] as const
+export type LifecycleStatus = typeof LIFECYCLE_STATUSES[number]
+
+export const AlterarStatusSchema = z.object({
+  megaProcessoId: z.number().int().positive(),
+  status: z.enum(LIFECYCLE_STATUSES),
+})
+
+export const ComentarioSchema = z.object({
+  megaProcessoId: z.number().int().positive(),
+  texto: z.string().min(1).max(2000).trim(),
+  parentId: z.string().optional(),
+})
+
+export const RiscoSchema = z.object({
+  megaProcessoId: z.number().int().positive(),
+  descricao: z.string().min(2).max(1000).trim(),
+  probabilidade: z.enum(['A', 'M', 'B']).default('M'),
+  impacto: z.enum(['A', 'M', 'B']).default('M'),
+  controle: z.string().max(1000).optional().or(z.literal('')),
+})
+
+export const KpiSchema = z.object({
+  tempoMedioCiclo: z.number().positive().optional(),
+  custoEstimado: z.number().positive().optional(),
+  volumeMensal: z.number().int().positive().optional(),
 })
 
 export type FormState<T = Record<string, string[]>> =

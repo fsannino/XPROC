@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { LoginSchema, UsuarioSchema, MegaProcessoSchema, CenarioSchema, TrocaSenhaSchema } from '@/lib/definitions'
+import {
+  LoginSchema, UsuarioSchema, MegaProcessoSchema, CenarioSchema, TrocaSenhaSchema,
+  AlterarStatusSchema, RiscoSchema, ComentarioSchema,
+} from '@/lib/definitions'
 
 describe('LoginSchema', () => {
   it('válido com código e senha', () => {
@@ -60,6 +63,43 @@ describe('TrocaSenhaSchema', () => {
   })
   it('falha quando nova senha é muito curta', () => {
     const r = TrocaSenhaSchema.safeParse({ senhaAtual: 'antiga', novaSenha: '12', confirmar: '12' })
+    expect(r.success).toBe(false)
+  })
+})
+
+describe('AlterarStatusSchema', () => {
+  it('aceita status válido', () => {
+    const r = AlterarStatusSchema.safeParse({ megaProcessoId: 1, status: 'Publicado' })
+    expect(r.success).toBe(true)
+  })
+  it('rejeita status inválido', () => {
+    const r = AlterarStatusSchema.safeParse({ megaProcessoId: 1, status: 'Invalido' })
+    expect(r.success).toBe(false)
+  })
+})
+
+describe('RiscoSchema', () => {
+  it('aceita risco válido', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco de fraude', probabilidade: 'A', impacto: 'M' })
+    expect(r.success).toBe(true)
+  })
+  it('rejeita descrição muito curta', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'R', probabilidade: 'A', impacto: 'M' })
+    expect(r.success).toBe(false)
+  })
+  it('rejeita probabilidade inválida', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco X', probabilidade: 'X', impacto: 'M' })
+    expect(r.success).toBe(false)
+  })
+})
+
+describe('ComentarioSchema', () => {
+  it('aceita comentário válido', () => {
+    const r = ComentarioSchema.safeParse({ megaProcessoId: 1, texto: 'Ótimo processo!' })
+    expect(r.success).toBe(true)
+  })
+  it('rejeita texto vazio', () => {
+    const r = ComentarioSchema.safeParse({ megaProcessoId: 1, texto: '' })
     expect(r.success).toBe(false)
   })
 })

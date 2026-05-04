@@ -6,6 +6,7 @@ import { logout } from '@/actions/auth'
 
 const navItems = [
   { href: '/dashboard', label: 'Início', icon: '🏠' },
+  { href: '/dashboard/mapa', label: 'Mapa', icon: '🗺️' },
   { href: '/dashboard/processos', label: 'Processos', icon: '🔄' },
   { href: '/dashboard/transacoes', label: 'Transações', icon: '💱' },
   { href: '/dashboard/cenarios', label: 'Cenários', icon: '📋' },

@@ -3,6 +3,7 @@ export const metadata = { title: 'Processos' }
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { excluirMegaProcesso } from '@/actions/processos'
+import { StatusBadge } from '@/components/ui/status-badge'
 import { DeleteButton } from '@/components/ui/delete-button'
 import { SearchInput } from '@/components/ui/search'
 import { Pagination } from '@/components/ui/pagination'
@@ -71,11 +72,12 @@ export default async function ProcessosPage({ searchParams }: { searchParams: Pr
                 <td className="px-4 py-3 text-center text-gray-700">{mp._count.processos}</td>
                 <td className="px-4 py-3 text-center text-gray-700">{mp._count.acessos}</td>
                 <td className="px-4 py-3 text-center">
-                  {mp.bloqueado ? (
-                    <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Bloqueado</span>
-                  ) : (
-                    <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Ativo</span>
-                  )}
+                  <div className="flex flex-col items-center gap-1">
+                    <StatusBadge status={mp.status} />
+                    {mp.bloqueado && (
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Bloqueado</span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-right space-x-2">
                   <Link
