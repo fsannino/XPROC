@@ -6,7 +6,15 @@ import { atualizarMegaProcesso } from '@/actions/processos'
 import { useToast } from '@/components/ui/toast'
 import type { MegaProcesso } from '@prisma/client'
 
-export default function EditarMegaProcessoForm({ megaProcesso }: { megaProcesso: MegaProcesso }) {
+type Usuario = { id: string; codigo: string; nome: string }
+
+export default function EditarMegaProcessoForm({
+  megaProcesso,
+  usuarios,
+}: {
+  megaProcesso: MegaProcesso & { responsavelId?: string | null }
+  usuarios: Usuario[]
+}) {
   const router = useRouter()
   const { show } = useToast()
   const action = atualizarMegaProcesso.bind(null, megaProcesso.id)
@@ -56,6 +64,22 @@ export default function EditarMegaProcessoForm({ megaProcesso }: { megaProcesso:
           rows={4}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Responsável (Owner)</label>
+        <select
+          name="responsavelId"
+          defaultValue={megaProcesso.responsavelId ?? ''}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">— Sem responsável —</option>
+          {usuarios.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.codigo} — {u.nome}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-center gap-2">

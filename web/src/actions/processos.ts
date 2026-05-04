@@ -12,13 +12,17 @@ export async function criarMegaProcesso(_state: unknown, formData: FormData) {
     abreviacao: formData.get('abreviacao') || undefined,
     descricaoLonga: formData.get('descricaoLonga') || undefined,
     bloqueado: formData.get('bloqueado') === 'true',
+    responsavelId: formData.get('responsavelId') || undefined,
   })
 
   if (!validated.success) {
     return { errors: validated.error.flatten().fieldErrors }
   }
 
-  await prisma.megaProcesso.create({ data: validated.data })
+  const { responsavelId, ...rest } = validated.data
+  await prisma.megaProcesso.create({
+    data: { ...rest, responsavelId: responsavelId || null },
+  })
   revalidatePath('/dashboard/processos')
   return { success: true }
 }
@@ -29,13 +33,18 @@ export async function atualizarMegaProcesso(id: number, _state: unknown, formDat
     abreviacao: formData.get('abreviacao') || undefined,
     descricaoLonga: formData.get('descricaoLonga') || undefined,
     bloqueado: formData.get('bloqueado') === 'true',
+    responsavelId: formData.get('responsavelId') || undefined,
   })
 
   if (!validated.success) {
     return { errors: validated.error.flatten().fieldErrors }
   }
 
-  await prisma.megaProcesso.update({ where: { id }, data: validated.data })
+  const { responsavelId, ...rest } = validated.data
+  await prisma.megaProcesso.update({
+    where: { id },
+    data: { ...rest, responsavelId: responsavelId || null },
+  })
   revalidatePath('/dashboard/processos')
   return { success: true }
 }

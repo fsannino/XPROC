@@ -19,10 +19,13 @@ model Usuario {
   criadoEm     DateTime  @default(now()) @map("criado_em")
   atualizadoEm DateTime  @updatedAt @map("atualizado_em")
 
-  acessos       Acesso[]
-  perfis        UsuarioPerfil[]
-  mapeamentos   UsuarioMapeamento[]
-  historico     UsuarioHistorico[]
+  acessos              Acesso[]
+  perfis               UsuarioPerfil[]
+  mapeamentos          UsuarioMapeamento[]
+  historico            UsuarioHistorico[]
+  comentarios          ProcessoComentario[]  @relation("ComentarioAutor")
+  versoesCriadas       MegaProcessoVersao[]  @relation("VersaoAutor")
+  megaProcessosResp    MegaProcesso[]        @relation("MegaProcessoResponsavel")
 
   @@map("usuario")
 }
@@ -72,6 +75,8 @@ model MegaProcesso {
   bloqueado       Boolean  @default(false) @map("mepr_in_bloqueado")
   bloqueadoPerfil Boolean  @default(false) @map("mepr_in_bloqueado_perfil")
   descricaoLonga  String?  @map("mepr_tx_descricao") @db.Text
+  status          String   @default("Publicado") @map("mepr_tx_status")
+  responsavelId   String?  @map("responsavel_id")
   criadoEm      DateTime  @default(now()) @map("criado_em")
   atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
 
@@ -79,6 +84,10 @@ model MegaProcesso {
   acessos         Acesso[]
   transacoes      TransacaoMega[]
   mapeamentos     UsuarioMapeamento[]
+  comentarios     ProcessoComentario[]
+  versoes         MegaProcessoVersao[]
+  riscos          ProcessoRisco[]
+  responsavel     Usuario?             @relation("MegaProcessoResponsavel", fields: [responsavelId], references: [id])
 
   @@map("mega_processo")
 }
@@ -88,6 +97,9 @@ model Processo {
   megaProcessoId Int          @map("mega_processo_id")
   descricao      String       @map("proc_tx_desc_processo")
   sequencia      Int?         @map("proc_nr_sequencia")
+  tempoMedioCiclo Float?      @map("proc_nr_tempo_medio")
+  custoEstimado   Float?      @map("proc_nr_custo")
+  volumeMensal    Int?        @map("proc_nr_volume")
   criadoEm     DateTime     @default(now()) @map("criado_em")
   atualizadoEm DateTime     @updatedAt @map("atualizado_em")
 
@@ -231,6 +243,53 @@ model CenarioTransacao {
 
   @@id([cenarioId, transacaoId])
   @@map("cenario_transacao")
+}
+
+// ─── BPM: Ciclo de Vida, Comentários, Riscos ─────────────────────
+
+model ProcessoComentario {
+  id             String       @id @default(cuid())
+  megaProcessoId Int          @map("mega_processo_id")
+  usuarioId      String       @map("usuario_id")
+  texto          String       @map("texto") @db.Text
+  parentId       String?      @map("parent_id")
+  criadoEm      DateTime     @default(now()) @map("criado_em")
+
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id], onDelete: Cascade)
+  usuario        Usuario      @relation("ComentarioAutor", fields: [usuarioId], references: [id])
+  respostas      ProcessoComentario[] @relation("ComentarioThread")
+  parent         ProcessoComentario?  @relation("ComentarioThread", fields: [parentId], references: [id])
+
+  @@map("processo_comentario")
+}
+
+model MegaProcessoVersao {
+  id             String       @id @default(cuid())
+  megaProcessoId Int          @map("mega_processo_id")
+  versao         Int          @map("versao_nr")
+  statusAnterior String       @map("status_anterior")
+  statusNovo     String       @map("status_novo")
+  criadoEm      DateTime     @default(now()) @map("criado_em")
+  criadoPorId   String       @map("criado_por_id")
+
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id], onDelete: Cascade)
+  criadoPor      Usuario      @relation("VersaoAutor", fields: [criadoPorId], references: [id])
+
+  @@map("mega_processo_versao")
+}
+
+model ProcessoRisco {
+  id             String       @id @default(cuid())
+  megaProcessoId Int          @map("mega_processo_id")
+  descricao      String       @map("risco_descricao") @db.Text
+  probabilidade  String       @default("M") @map("risco_probabilidade")
+  impacto        String       @default("M") @map("risco_impacto")
+  controle       String?      @map("risco_controle") @db.Text
+  criadoEm      DateTime     @default(now()) @map("criado_em")
+
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id], onDelete: Cascade)
+
+  @@map("processo_risco")
 }
 
 // ─── Auditoria ────────────────────────────────────────────────────
