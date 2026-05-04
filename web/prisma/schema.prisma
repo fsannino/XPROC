@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Autenticação ─────────────────────────────────────────────────
+
+model Usuario {
+  id            String    @id @default(cuid())
+  codigo        String    @unique @map("usua_cd_usuario")
+  nome          String    @map("usua_tx_nome_usuario")
+  email         String?   @unique @map("usua_tx_email_externo")
+  senha         String    @map("usua_tx_senha")
+  categoria     String?   @map("usua_tx_categoria")
+  ativo         Boolean   @default(true)
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  acessos       Acesso[]
+  perfis        UsuarioPerfil[]
+  mapeamentos   UsuarioMapeamento[]
+  historico     UsuarioHistorico[]
+
+  @@map("usuario")
+}
+
+model Acesso {
+  id             String       @id @default(cuid())
+  usuarioId      String       @map("usuario_id")
+  megaProcessoId Int          @map("mega_processo_id")
+  criadoEm     DateTime     @default(now()) @map("criado_em")
+  atualizadoEm DateTime     @updatedAt @map("atualizado_em")
+
+  usuario        Usuario      @relation(fields: [usuarioId], references: [id])
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id])
+
+  @@unique([usuarioId, megaProcessoId])
+  @@map("acesso")
+}
+
+model Perfil {
+  id        Int           @id @default(autoincrement()) @map("perf_cd_perfil")
+  descricao String        @map("perf_tx_desc_perfil")
+
+  usuarios  UsuarioPerfil[]
+
+  @@map("perfil")
+}
+
+model UsuarioPerfil {
+  usuarioId String   @map("usuario_id")
+  perfilId  Int      @map("perfil_id")
+  criadoEm DateTime @default(now()) @map("criado_em")
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  perfil    Perfil   @relation(fields: [perfilId], references: [id])
+
+  @@id([usuarioId, perfilId])
+  @@map("usuario_perfil")
+}
+
+// ─── Hierarquia de Processos ──────────────────────────────────────
+
+model MegaProcesso {
+  id              Int      @id @default(autoincrement()) @map("mepr_cd_mega_processo")
+  descricao       String   @map("mepr_tx_desc_mega_processo")
+  abreviacao      String?  @map("mepr_tx_abrevia")
+  abreviacaoCurso String?  @map("mepr_tx_abrevia_curso")
+  bloqueado       Boolean  @default(false) @map("mepr_in_bloqueado")
+  bloqueadoPerfil Boolean  @default(false) @map("mepr_in_bloqueado_perfil")
+  descricaoLonga  String?  @map("mepr_tx_descricao") @db.Text
+  criadoEm      DateTime  @default(now()) @map("criado_em")
+  atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
+
+  processos       Processo[]
+  acessos         Acesso[]
+  transacoes      TransacaoMega[]
+  mapeamentos     UsuarioMapeamento[]
+
+  @@map("mega_processo")
+}
+
+model Processo {
+  id             Int          @id @default(autoincrement()) @map("proc_cd_processo")
+  megaProcessoId Int          @map("mega_processo_id")
+  descricao      String       @map("proc_tx_desc_processo")
+  sequencia      Int?         @map("proc_nr_sequencia")
+  criadoEm     DateTime     @default(now()) @map("criado_em")
+  atualizadoEm DateTime     @updatedAt @map("atualizado_em")
+
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id])
+  subProcessos   SubProcesso[]
+
+  @@map("processo")
+}
+
+model SubProcesso {
+  id             Int       @id @default(autoincrement()) @map("supr_cd_sub_processo")
+  megaProcessoId Int       @map("mega_processo_id")
+  processoId     Int       @map("processo_id")
+  descricao      String    @map("supr_tx_desc_sub_processo")
+  sequencia      Int?      @map("supr_nr_sequencia")
+  impacto        Int?      @map("supr_tx_impacto")
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  processo       Processo  @relation(fields: [processoId], references: [id])
+  empresas       SubProcessoEmpresa[]
+  atividades     AtividadeCarga[]
+
+  @@map("sub_processo")
+}
+
+model Transacao {
+  id           String   @id @map("tran_cd_transacao")
+  descricao    String?  @map("tran_tx_desc_transacao")
+  criadoEm    DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  megaProcessos TransacaoMega[]
+  atividades    AtividadeCarga[]
+  cenarios      CenarioTransacao[]
+
+  @@map("transacao")
+}
+
+model TransacaoMega {
+  transacaoId    String       @map("transacao_id")
+  megaProcessoId Int          @map("mega_processo_id")
+  criadoEm     DateTime     @default(now()) @map("criado_em")
+
+  transacao      Transacao    @relation(fields: [transacaoId], references: [id])
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id])
+
+  @@id([transacaoId, megaProcessoId])
+  @@map("transacao_mega")
+}
+
+// ─── Módulos ──────────────────────────────────────────────────────
+
+model Modulo {
+  id           Int       @id @default(autoincrement()) @map("modu_cd_modulo")
+  descricao    String    @map("modu_tx_desc_modulo")
+  criadoEm    DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  subModulos   SubModulo[]
+
+  @@map("modulo")
+}
+
+model SubModulo {
+  id           Int      @id @default(autoincrement()) @map("sumo_nr_cd_sequencia")
+  moduloId     Int?     @map("modulo_id")
+  descricao    String   @map("sumo_tx_desc_sub_modulo")
+  abreviacao   String?  @map("sumo_tx_abrev")
+  criadoEm    DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  modulo       Modulo?  @relation(fields: [moduloId], references: [id])
+
+  @@map("sub_modulo")
+}
+
+// ─── Empresa / Unidade ────────────────────────────────────────────
+
+model EmpresaUnidade {
+  id           Int       @id @default(autoincrement()) @map("empr_cd_nr_empresa")
+  nome         String    @map("empr_tx_nome_empresa")
+  criadoEm    DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  subProcessos SubProcessoEmpresa[]
+
+  @@map("empresa_unidade")
+}
+
+model SubProcessoEmpresa {
+  subProcessoId Int            @map("sub_processo_id")
+  empresaId     Int            @map("empresa_id")
+  criadoEm    DateTime       @default(now()) @map("criado_em")
+
+  subProcesso   SubProcesso    @relation(fields: [subProcessoId], references: [id])
+  empresa       EmpresaUnidade @relation(fields: [empresaId], references: [id])
+
+  @@id([subProcessoId, empresaId])
+  @@map("sub_processo_empresa")
+}
+
+// ─── Atividades ───────────────────────────────────────────────────
+
+model AtividadeCarga {
+  id            Int         @id @default(autoincrement()) @map("atca_cd_atividade_carga")
+  subProcessoId Int         @map("sub_processo_id")
+  transacaoId   String?     @map("transacao_id")
+  descricao     String?     @map("atca_tx_desc_atividade")
+  sequencia     Int?        @map("atca_nr_sequencia")
+  criadoEm    DateTime    @default(now()) @map("criado_em")
+  atualizadoEm DateTime    @updatedAt @map("atualizado_em")
+
+  subProcesso   SubProcesso @relation(fields: [subProcessoId], references: [id])
+  transacao     Transacao?  @relation(fields: [transacaoId], references: [id])
+
+  @@map("atividade_carga")
+}
+
+// ─── Cenários ─────────────────────────────────────────────────────
+
+model Cenario {
+  id           Int       @id @default(autoincrement()) @map("cena_cd_cenario")
+  descricao    String    @map("cena_tx_desc_cenario")
+  situacao     String?   @map("cena_tx_situacao")
+  criadoEm    DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  transacoes   CenarioTransacao[]
+
+  @@map("cenario")
+}
+
+model CenarioTransacao {
+  cenarioId   Int       @map("cenario_id")
+  transacaoId String    @map("transacao_id")
+  criadoEm   DateTime  @default(now()) @map("criado_em")
+
+  cenario     Cenario   @relation(fields: [cenarioId], references: [id])
+  transacao   Transacao @relation(fields: [transacaoId], references: [id])
+
+  @@id([cenarioId, transacaoId])
+  @@map("cenario_transacao")
+}
+
+// ─── Auditoria ────────────────────────────────────────────────────
+
+model UsuarioMapeamento {
+  id             String       @id @default(cuid())
+  usuarioId      String       @map("usuario_id")
+  megaProcessoId Int          @map("mega_processo_id")
+  observacao     String?      @map("observacao") @db.Text
+  criadoEm     DateTime     @default(now()) @map("criado_em")
+
+  usuario        Usuario      @relation(fields: [usuarioId], references: [id])
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id])
+
+  @@map("usuario_mapeamento")
+}
+
+model UsuarioHistorico {
+  id         String   @id @default(cuid())
+  usuarioId  String   @map("usuario_id")
+  operacao   String   @map("operacao")
+  descricao  String?  @map("descricao") @db.Text
+  criadoEm  DateTime @default(now()) @map("criado_em")
+
+  usuario    Usuario  @relation(fields: [usuarioId], references: [id])
+
+  @@map("usuario_historico")
+}
