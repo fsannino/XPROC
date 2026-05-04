@@ -1,0 +1,98 @@
+<SCRIPT LANGUAGE="VBSCRIPT" RUNAT=SERVER>
+
+Sub Application_OnStart
+	'==FrontPage Generated - startspan==
+	Dim FrontPage_UrlVars(1)
+	'--Project Data Connection
+		Application("Exemplo_ConnectionString") = "DRIVER={Microsoft Access Driver (*.mdb)};DBQ=URL=fpdb/fpnwind.mdb"
+		FrontPage_UrlVars(0) = "Exemplo_ConnectionString"
+		Application("Exemplo_ConnectionTimeout") = 15
+		Application("Exemplo_CommandTimeout") = 30
+		Application("Exemplo_CursorLocation") = 3
+		Application("Exemplo_RuntimeUserName") = ""
+		Application("Exemplo_RuntimePassword") = ""
+	'--
+	Application("FrontPage_UrlVars") = FrontPage_UrlVars
+	'==FrontPage Generated - endspan==
+    Application("datainicial") = now
+    'Application("Totalvisitas") = 0
+    'Application("Visitasatuais") = 0
+end sub
+Sub FrontPage_StartSession
+	On Error Resume Next
+	if Len(Application("FrontPage_VRoot")) > 0 then Exit Sub
+	
+	sFile = "global.asa"
+	sRootPath = Request.ServerVariables("APPL_PHYSICAL_PATH")
+	if Left(sRootPath,1) = "/" then sSep = "/" else sSep = "\"
+	if Right(sRootPath,1) <> sSep then sRootPath = sRootPath & sSep
+	sRootPath = sRootPath & sFile
+	
+	' discover the VRoot for the current page;
+	' walk back up VPath until we match VRoot
+	Vroot = Request.ServerVariables("PATH_INFO")
+	iCount = 0
+	do while Len(Vroot) > 1
+		idx = InStrRev(Vroot, "/")
+		if idx > 0 then
+			Vroot = Left(Vroot,idx)
+		else
+			' error; assume root web
+			Vroot = "/"
+		end if
+		if Server.MapPath(Vroot & sFile) = sRootPath then exit do
+		if Right(Vroot,1) = "/" then Vroot = Left(Vroot,Len(Vroot)-1)
+		iCount = iCount + 1
+		if iCount > 100 then
+			' error; assume root web
+			Vroot = "/"
+			exit do
+		end if
+	loop
+	' map all URL= attributes in _ConnectionString variables
+	Application.Lock
+	if Len(Application("FrontPage_VRoot")) = 0 then
+		Application("FrontPage_VRoot") = Vroot
+		UrlVarArray = Application("FrontPage_UrlVars")
+		for i = 0 to UBound(UrlVarArray)
+			if Len(UrlVarArray(i)) > 0 then FrontPage_MapUrl(UrlVarArray(i))
+		next
+	end if
+	Application.Unlock
+End Sub
+Sub FrontPage_MapUrl(AppVarName)
+	' convert URL attribute in conn string to absolute file location
+	strVal = Application(AppVarName)
+	strKey = "URL="
+	idxStart = InStr(strVal, strKey)
+	If idxStart = 0 Then Exit Sub
+	strBefore = Left(strVal, idxStart - 1)
+	idxStart = idxStart + Len(strKey)
+	idxEnd = InStr(idxStart, strVal, ";")
+	If idxEnd = 0 Then
+		strAfter = ""
+		strURL = Mid(strVal, idxStart)
+	Else
+		strAfter = ";" & Mid(strVal, idxEnd + 1)
+		strURL = Mid(strVal, idxStart, idxEnd - idxStart)
+	End If
+	strOut = strBefore & Server.MapPath(Application("FrontPage_VRoot") & strURL) & strAfter
+	Application(AppVarName) = strOut
+End Sub
+
+Sub Application_OnEnd
+end sub
+
+Sub Session_OnStart
+	FrontPage_StartSession '==FrontPage Generated==
+    Application("Totalvisitas") = Application("Totalvisitas") + 1
+    Application("Visitasatuais") = Application("Visitasatuais") + 1
+    Session("MegaProcesso")
+end sub
+
+Sub Session_OnEnd
+	Application("Visitasatuais") = Application("Visitasatuais") - 1
+	Session("MegaProcesso")
+end sub
+
+</SCRIPT><head><title>Configurações da Web para Active Server Pages</title></head>

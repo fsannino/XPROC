@@ -1,0 +1,75 @@
+<%
+'response.End()
+str_Origem_Link = request("pOrigemLink")
+str_Chave = Request("chave")
+%>
+<html>
+<head>
+<title>X-PROC</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<base target="test4"
+</head>
+<%
+if str_Origem_Link <> "NOTES" then
+%>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function jump_1()
+{
+    var sscWindow
+    sscWindow= window.open('http://localhost/xproc/sinergialogin.html', 'test1', 'left=200,screenX=400,top=200,screenY=400,resizable=no,scrollbars=no,width=550,height=386,toolbar=no,location=no');
+
+    if (window.focus)
+    {
+        sscWindow.focus()
+    }
+    return false;
+}
+//-->
+<!--
+    opener.opener = opener;
+    opener.close();
+//-->
+</script>
+<%
+elseif str_Origem_Link = "NOTES" then
+%>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function jump_1()
+{
+    var sscWindow
+    sscWindow= window.open('http://localhost/xproc/index.asp?pOrigemLink=<%=str_Origem_Link%>&chave=<%=str_Chave%>', 'test1', 'left=200,screenX=400,top=200,screenY=400,resizable=no,scrollbars=no,width=550,height=386,toolbar=no,location=no');
+
+    if (window.focus)
+    {
+        sscWindow.focus()
+    }
+    return false;
+}
+//-->
+<!--
+    opener.opener = opener;
+    opener.close();
+//-->
+</script>
+<%
+end if
+%>
+<body bgcolor="#FFFFFF" text="#000000" onload="javascript:jump_1();"></body></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

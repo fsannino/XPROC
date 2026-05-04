@@ -1,0 +1,210 @@
+<%@LANGUAGE="VBSCRIPT" CODEPAGE="1252"%>
+<%
+Response.Expires=0
+
+strMSG = Request("pMsg")
+'response.Write(strMSG)
+if strMSG = "C" then
+   str_Tipo = "C"
+   strMSG = "Acesso restrito à este conteúdo!"
+end if
+strPlano =  Request("pPlano")
+strUsuario = Request("pUsua")
+
+strErroServidor = Request("pErroServidor")
+
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><!-- InstanceBegin template="/Templates/BASICO_XPEP_03.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>:: Cutovet - Mensagem de Erro</title>
+<!-- InstanceEndEditable -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- InstanceBeginEditable name="head" -->
+<!-- InstanceEndEditable -->
+<style type="text/css">
+<!--
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+a {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #333333; text-decoration: none}
+a:hover {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; font-weight: normal; color: #333333;  text-decoration: underline}
+-->
+</style>
+<link href="/css/biblioteca.css" rel="stylesheet" type="text/css">
+<link href="../../../css/objinterface.css" rel="stylesheet" type="text/css">
+<link href="../../../css/texinterface.css" rel="stylesheet" type="text/css">
+<!-- InstanceBeginEditable name="Head01" -->
+
+<!-- InstanceEndEditable -->
+</head>
+<!-- InstanceBeginEditable name="JavaScri" -->
+<script language="JavaScript">	
+
+</script>
+<!-- InstanceEndEditable -->
+<%=ls_Script%>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+	<div id="Layer1" style="position:absolute; left:20px; top:10px; width:134px; height:53px; z-index:1"><img src="../img/000005.gif" alt=":: Logo Sinergia" width="134" height="53" border="0" usemap="#Map2"> 
+	  <map name="Map2">
+	    <area shape="rect" coords="6,7,129,49">
+	  </map>
+</div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td><table width="780" height="44" border="0" cellpadding="0" cellspacing="0">
+	        <tr>
+	          <td width="583" height="44"><img src="../img/_0.gif" width="1" height="1"></td>
+	          <td width="197" height="44"><img src="../../../imagens/000043.gif" width="95" height="44"></td>
+	        </tr>
+	      </table></td>
+	  </tr>
+</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td bgcolor="#6699CC">
+			<table width="780" border="0" cellspacing="0" cellpadding="0">
+			  <tr>
+			    <td width="154" height="21"><img src="../img/000002.gif" width="154" height="21"></td>
+			    <td width="19" height="21"><img src="../img/000003.gif" width="19" height="21"></td>
+			    <td width="202" height="21">
+					<font color="#FFFFFF" size="1" face="Verdana, Arial, Helvetica, sans-serif">
+						<strong>
+						</strong>
+					</font>
+			    </td>
+			    <td>&nbsp;</td>
+		      </tr>
+			</table>
+	    </td>
+	  </tr>
+	</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td width="1" height="1" bgcolor="#003366"><img src="../img/_0.gif" width="1" height="1"></td>
+	  </tr>
+	</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td height="5"><img src="../img/_0.gif" width="1" height="1"></td>
+	  </tr>
+	</table>
+	<table width="780" height="58" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="20" height="39"><img src="../img/_0.gif" width="1" height="1"></td>
+        <td width="740" height="39" background="../img/000006.gif"><table width="100%"  border="0" cellspacing="0" cellpadding="1">
+            <tr>
+              <td width="11%">&nbsp;</td>
+              <td width="13%">&nbsp;</td>
+              <td width="61%"><font color="#666666" size="3" face="Verdana, Arial, Helvetica, sans-serif"><b>PLANO DE ENTRADA EM PRODU&Ccedil;&Atilde;O</b></font></td>
+              <td width="15%"><a href="../../../indexA_xpep.asp"><img src="../img/botao_home_off_01.gif" alt="Ir para tela inicial" width="34" height="23" border="0"></a></td>
+            </tr>
+        </table></td>
+        <td width="20" height="39"><img src="../img/_0.gif" width="1" height="1"></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><div align="right"><span class="style8">
+        <%=Session("CdUsuario") & "-" &  Session("NomeUsuario")%></span></div></td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+	<!-- InstanceBeginEditable name="corpo" -->
+    <table width="800" height="150" border="0" cellpadding="5" cellspacing="5">
+      <tr>
+        <td height="29"></td>
+        <td height="29" valign="middle" align="left"></td>
+        <td height="29" valign="middle" align="left" colspan="2">&nbsp;</td>
+      </tr>
+      <tr>
+        <td height="29"></td>
+        <td height="29" valign="middle" align="left"></td>
+        <td height="29" valign="middle" align="left" colspan="2">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="101" height="29"></td>
+        <td width="125" height="29" valign="middle" align="left"></td>
+        <td height="29" valign="middle" align="left" colspan="2">
+          <%if err.number=0 then%>
+          <b><font face="Verdana" color="#330099" size="2"><%=strMSG%></font></b> </td>
+      </tr>
+      <%else%>
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" colspan="2"> <b><font face="Verdana" size="2" color="#800000"><%=strMSG%> - <%=err.description%></font></b> </td>
+      </tr>
+      <%end if%>
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" colspan="2"> </td>
+      </tr>
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" colspan="2"> </td>
+      </tr>
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" colspan="2"> </td>
+      </tr>
+	  
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" width="51"><a href="../../../indexA_xpep.asp"><img src="../../../imagens/download_01.gif" width="18" height="18" border="0" align="right"></a></td>
+        <td height="1" valign="middle" align="left" width="458"><font face="Verdana" color="#330099" size="2">Retornar para Tela Principal</font></td>
+      </tr>
+	 <%if strUsuario <> "" then%>
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" width="51"><a href="javascript:history.back();"><img src="../../../imagens/download_01.gif" width="18" height="18" border="0" align="right"></a></td>
+        <td height="1" valign="middle" align="left" width="458"><font face="Verdana" color="#330099" size="2">Retornar para Tela de Usuário</font></td>
+      </tr>
+	  <%else
+	       if str_Tipo <> "C" and strErroServidor = "" then%>	  
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" width="51"><a href="seleciona_plano.asp"><img src="../../../imagens/download_01.gif" width="18" height="18" border="0" align="right"></a></td>
+        <td height="1" valign="middle" align="left" width="458"><font face="Verdana" color="#330099" size="2">Retornar - Sele&ccedil;&atilde;o para Detalhamento das Atividades</font></td>
+      </tr>
+	    
+	  <%   end if
+	   end if%>
+	  
+	  <%if strPlano <> "" and strErroServidor = "" then%>
+		  <tr>
+			 <td width="101" height="1"></td>
+			 <td width="125" height="1" valign="middle" align="left"></td>
+			 <td height="1" valign="middle" align="left" width="51"><a href="#"><img src="../../../imagens/download_01.gif" width="18" onClick="javascript:history.back();" height="18" border="0" align="right"></a></td>
+			 <td height="1" valign="middle" align="left" width="458"><font face="Verdana" color="#330099" size="2">Retornar - Para o preenchimento do Detalhamento das Atividades</font></td>
+		  </tr>
+	  <%end if%>
+	  
+      <tr>
+        <td width="101" height="1"></td>
+        <td width="125" height="1" valign="middle" align="left"></td>
+        <td height="1" valign="middle" align="left" colspan="2"> </td>
+      </tr>
+    </table>
+    <!-- InstanceEndEditable -->
+    <table width="200" border="0" align="center">
+<tr>	
+	<td height="10" width="780"></td>
+</tr>
+<tr>
+	<td width="780">			
+		<p width="780" align="center"><img src="../../../img/000025.gif" width="467" height="1"></p>
+		<p align="center"><font color="#666666" size="1" face="Verdana, Arial, Helvetica, sans-serif">© 2003 Sinergia | A Petrobras integrada rumo ao futuro</font></p>
+	</td>
+</tr></table>
+</body>
+<!-- InstanceEnd --></html>

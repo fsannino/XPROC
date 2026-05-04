@@ -1,0 +1,675 @@
+ 
+
+<%
+set db = Server.CreateObject("ADODB.Connection")
+db.Open Session("Conn_String_Cogest_Gravacao")
+
+str_mega=0
+str_proc=0
+
+valor2=request("ID")
+
+if len(request("ID2"))>0 then
+	valor2=request("ID2")
+end if
+
+IF LEN(VALOR2)<11 THEN
+	RESPONSE.REDIRECT "ALTERA_CENARIO.ASP?sem=1"
+END IF
+
+SSQL30="select * from " & Session("PREFIXO") & "CENARIO where CENA_CD_CENARIO='" & valor2 & "'"
+set cen_atual=db.execute(SSQL30)
+
+IF cen_atual.eof=true THEN
+	RESPONSE.REDIRECT "ALTERA_CENARIO.ASP?sem=1"
+END IF
+
+str_mega=request("selMegaProcesso")
+str_proc=request("selProcesso")
+str_sub=request("selSubProcesso")
+str_onda=request("selOnda")
+
+IF str_mega=0 or str_proc=0 then
+	str_mega=cen_atual("MEPR_CD_MEGA_PROCESSO")
+	str_proc=cen_atual("PROC_CD_PROCESSO")
+	str_sub=cen_atual("SUPR_CD_SUB_PROCESSO")
+	str_onda=cen_atual("ONDA_CD_ONDA")
+end if
+
+if session("MegaProcesso")<>0 and str_mega=0 then
+	str_mega=session("MegaProcesso")
+end if
+
+str_SQL_MegaProc = ""
+str_SQL_MegaProc = str_SQL_MegaProc & " SELECT DISTINCT "
+str_SQL_MegaProc = str_SQL_MegaProc & " " & Session("PREFIXO") & "MEGA_PROCESSO.MEPR_CD_MEGA_PROCESSO "
+str_SQL_MegaProc = str_SQL_MegaProc & " , " & Session("PREFIXO") & "MEGA_PROCESSO.MEPR_TX_DESC_MEGA_PROCESSO "
+str_SQL_MegaProc = str_SQL_MegaProc & " FROM " & Session("PREFIXO") & "MEGA_PROCESSO "
+str_SQL_MegaProc = str_SQL_MegaProc & " WHERE MEPR_CD_MEGA_PROCESSO IN (" & Session("AcessoUsuario") & ")"
+str_SQL_MegaProc = str_SQL_MegaProc & " order by " & Session("PREFIXO") & "MEGA_PROCESSO.MEPR_TX_DESC_MEGA_PROCESSO "
+
+set rs_mega=db.execute(str_SQL_MegaProc)
+
+set rs_onda=db.execute("SELECT * FROM " & Session("PREFIXO") & "ONDA ORDER BY ONDA_TX_DESC_ONDA")
+
+if str_mega<>0 then
+	set rs_proc=db.execute("SELECT * FROM " & Session("PREFIXO") & "PROCESSO WHERE MEPR_CD_MEGA_PROCESSO=" & str_mega & " ORDER BY PROC_TX_DESC_PROCESSO")
+	set rs_class=db.execute("SELECT * FROM " & Session("PREFIXO") & "CLASSE_CENARIO_MEGA_PROCESSO WHERE MEPR_CD_MEGA_PROCESSO=" & str_mega)
+else
+	set rs_proc=db.execute("SELECT * FROM " & Session("PREFIXO") & "PROCESSO WHERE MEPR_CD_MEGA_PROCESSO=0 ORDER BY PROC_TX_DESC_PROCESSO")
+	set rs_class=db.execute("SELECT * FROM " & Session("PREFIXO") & "CLASSE_CENARIO_MEGA_PROCESSO WHERE MEPR_CD_MEGA_PROCESSO=0")
+end if
+
+if str_mega<>0 and str_proc<>0 then
+	set rs_sub=db.execute("SELECT * FROM " & Session("PREFIXO") & "SUB_PROCESSO WHERE MEPR_CD_MEGA_PROCESSO=" & str_mega & " AND PROC_CD_PROCESSO=" & str_proc & " ORDER BY SUPR_TX_DESC_SUB_PROCESSO")
+else
+	set rs_sub=db.execute("SELECT * FROM " & Session("PREFIXO") & "SUB_PROCESSO WHERE MEPR_CD_MEGA_PROCESSO=0 ORDER BY SUPR_TX_DESC_SUB_PROCESSO ")
+end if
+
+if str_mega<>0 and str_proc=0 then
+	set rs_proc=db.execute("SELECT * FROM " & Session("PREFIXO") & "PROCESSO WHERE MEPR_CD_MEGA_PROCESSO=" & str_mega & " ORDER BY PROC_TX_DESC_PROCESSO")
+end if
+%>
+<html>
+
+<head>
+<title>SINERGIA # XPROC # Processos de Negócio</title>
+</head>
+
+<script language="JavaScript">
+<!--
+
+function MM_findObj(n, d) { //v4.0
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && document.getElementById) x=document.getElementById(n); return x;
+}
+
+function carrega_txt(fbox) {
+document.frm1.txtEmpresa.value = "";
+for(var i=0; i<fbox.options.length; i++) {
+document.frm1.txtEmpresa.value = document.frm1.txtEmpresa.value + "," + fbox.options[i].value;
+   }
+}
+function MM_changePropOO(objName,x,theProp,theValue) { //v3.0
+  var obj = MM_findObj(objName);
+  var obj2 = MM_findObj(theValue);
+  //alert("obj."+theProp+"="+"obj."+theProp+"+"+ "'  '+"+"obj2."+theProp);
+  if (obj && obj2 && (theProp.indexOf("style.")==-1 || obj.style &&  obj2.style )) eval("obj."+theProp+"="+"obj."+theProp+"+"+ "'  '+"+"obj2."+theProp);
+}
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+//-->
+</script>
+<script language="javascript" src="../js/troca_lista.js"></script>
+
+<script>
+function enviar()
+{
+window.location.href='alterar_cenario.asp?ID='+document.frm1.ID.value+'&selMegaProcesso='+document.frm1.selMegaProcesso.value+'&selProcesso='+document.frm1.selProcesso.value
+}
+
+function Confirma()
+{
+if(document.frm1.selProcesso.selectedIndex == 0)
+{
+alert("É obrigatória a seleção de um PROCESSO!");
+document.frm1.selProcesso.focus();
+return;
+}
+if(document.frm1.selSubProcesso.selectedIndex == 0)
+{
+alert("É obrigatória a seleção de um SUB-PROCESSO!");
+document.frm1.selSubProcesso.focus();
+return;
+}
+if(document.frm1.selClasse.selectedIndex == 0)
+{
+alert("É obrigatória a seleção da CLASSE DO CENÁRIO!");
+document.frm1.selClasse.focus();
+return;
+}
+//if(document.frm1.selDia.selectedIndex == 0)
+//{
+//alert("É obrigatória a seleção de um Dia!");
+//document.frm1.selDia.focus();
+//return;
+//}
+//if(document.frm1.selMes.selectedIndex == 0)
+//{
+//alert("É obrigatória a seleção de um Mes!");
+//document.frm1.selMes.focus();
+//return;
+//}
+//if(document.frm1.selAno.selectedIndex == 0)
+//{
+//alert("É obrigatória a seleção de um Ano!");
+//document.frm1.selAno.focus();
+//return;
+//}
+//if(document.frm1.txtResponsavel.value == "")
+//{
+//alert("É obrigatório o preenchimento do Responsável!");
+//document.frm1.txtResponsavel.focus();
+//return;
+//}
+if(document.frm1.list2.options.length == 0)
+{
+alert("É obrigatória a seleção de pelo menos uma EMPRESA RELACIONADA!");
+document.frm1.list1.focus();
+return;
+}
+if(document.frm1.txtTitulo.value == "")
+{
+alert("É obrigatório o preenchimento do TÍTULO DO CENÁRIO!");
+document.frm1.txtTitulo.focus();
+return;
+}
+if(document.frm1.txtDescricao.value == "")
+{
+alert("É obrigatório o preenchimento da DESCRIÇÃO DO CENÁRIO!");
+document.frm1.txtDescricao.focus();
+return;
+}
+else
+{
+carrega_txt(document.frm1.list2);
+document.frm1.submit();
+}
+}
+
+</script>
+
+<body topmargin="0" leftmargin="0" bgcolor="#FFFFFF" onLoad="MM_preloadImages('../../imagens/continua_F02.gif','../../imagens/continua2_F02.gif')">
+<form method="POST" action="valida_altera_cad_cenario.asp" name="frm1">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#330099">
+  <tr>
+    <td width="20%" height="20">&nbsp;</td>
+    <td width="44%" height="60">&nbsp;</td>
+      <td width="36%" valign="top"> 
+        <table width="154" border="0" align="right" cellpadding="0" cellspacing="0" bgcolor="#0000CC">
+          <tr> 
+            <td bgcolor="#330099" width="39" valign="middle" align="center"> 
+              <div align="center"> 
+                <p align="center"><a href="JavaScript:history.back()"><img border="0" src="voltar.gif"></a>
+              </div>
+            </td>
+            <td bgcolor="#330099" width="36" valign="middle" align="center"> 
+              <div align="center"><a href="JavaScript:history.forward()"><img border="0" src="avancar.gif"></a></div>
+            </td>
+            <td bgcolor="#330099" width="27" valign="middle" align="center"> 
+              <div align="center"><a href="JavaScript:window.external.AddFavorite('http://S6000WS12.corp.petrobras.biz/sinergia_total/index.htm','Sinergia  - X-Total')"><img border="0" src="favoritos.gif"></a></div>
+            </td>
+          </tr>
+          <tr> 
+            <td bgcolor="#330099" height="12" width="39" valign="middle" align="center"> 
+              <div align="center"><a href="javascript:print()"><img border="0" src="imprimir.gif"></a></div>
+            </td>
+            <td bgcolor="#330099" height="12" width="36" valign="middle" align="center"> 
+              <div align="center"><a href="JavaScript:history.go()"><img border="0" src="atualizar.gif"></a></div>
+            </td>
+            <td bgcolor="#330099" height="12" width="27" valign="middle" align="center"> 
+              <div align="center"><a href="../../indexA.asp"><img src="home.gif" border="0"></a>&nbsp;</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+  </tr>
+  <tr bgcolor="#00FF99">
+    <td colspan="3" height="20">
+      <table width="625" border="0" align="center">
+        <tr>
+          <td width="26"><img border="0" src="confirma_f02.gif" onclick="javascript:Confirma()"></td>
+          <td width="50"><font color="#330099" face="Verdana" size="2"><b>Enviar</b></font></td>
+          <td width="26">&nbsp;</td>
+          <td width="195"></td>
+            <td width="27"></td>  <td width="50"></td>
+          <td width="28"></td>
+          <td width="26">&nbsp;</td>
+          <td width="159"></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+  <table width="88%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td>&nbsp;</td>
+      <td>
+        <div align="center"><font face="Verdana" color="#330099" size="3">Alteração
+          de Cenário - <%=valor2%></font></div>
+      </td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <table border="0" width="914" height="391" cellspacing="0" cellpadding="0">
+    <tr> 
+      <td width="9" height="27"></td>
+      <td width="447" height="27"><b><font face="Verdana" size="2" color="#330099">Selecione 
+        o Mega-Processo&nbsp;</font></b></td>
+      <td height="27" colspan="4" valign="baseline"><font face="Verdana" size="2" color="#330099">&nbsp;</font> 
+        <input type="hidden" name="txtEmpresa" size="20">
+      </td>
+    </tr>
+    <tr> 
+      <td width="9" height="27"></td>
+      <td width="447" height="27"> 
+        <select size="1" name="selMegaProcesso">
+          <%do until rs_mega.eof=true
+       if trim(str_mega)=trim(rs_mega("MEPR_CD_MEGA_PROCESSO")) then
+       %>
+          <option selected value=<%=RS_MEGA("MEPR_CD_MEGA_PROCESSO")%>><%=RS_MEGA("MEPR_TX_DESC_MEGA_PROCESSO")%></option>
+          <%
+		end if
+		rs_mega.movenext
+		loop
+		%>
+        </select>
+      </td>
+      <%
+    SET RSONDA=DB.EXECUTE("SELECT * FROM " & Session("PREFIXO") & "ONDA WHERE onda_cd_onda=" & cen_atual("onda_cd_onda"))
+    valor_onda=rsonda("ONDA_TX_DESC_ONDA")
+    %>
+      <td height="27" colspan="4" valign="baseline"><font face="Verdana" size="2" color="#330099"><b>Empresas 
+        Relacionadas</b></font></td>
+    </tr>
+    <tr> 
+      <td width="9" height="21"></td>
+      <td height="21" colspan="2"><b><font face="Verdana" size="2" color="#330099">Selecione 
+        o Processo&nbsp;</font></b></td>
+      <td width="132" height="124" rowspan="10" valign="top"> 
+        <p style="margin-top: 0; margin-bottom: 0"> 
+          <select size="8" name="list1">
+            <%
+        set emp=db.execute("SELECT * FROM " & Session("PREFIXO") & "CENARIO WHERE CENA_CD_CENARIO='" & valor2 & "' AND CENA_TX_EMPRESA_RELAC LIKE '%PAPER COMPANIES%'")
+        if emp.eof=TRUE then
+        %>
+            <option value="PAPER COMPANIES">PAPER COMPANIES</option>
+            <%end if%>
+            <%
+        set emp=db.execute("SELECT * FROM " & Session("PREFIXO") & "CENARIO WHERE CENA_CD_CENARIO='" & valor2 & "' AND CENA_TX_EMPRESA_RELAC LIKE '%PETROBRAS%'")
+        if emp.eof=TRUE then
+        %>
+            <option value="PETROBRAS">PETROBRAS</option>
+            <%end if%>
+            <%
+        set emp=db.execute("SELECT * FROM " & Session("PREFIXO") & "CENARIO WHERE CENA_CD_CENARIO='" & valor2 & "' AND CENA_TX_EMPRESA_RELAC LIKE '%REFAP%'")
+        if emp.eof=TRUE then
+        %>
+            <option value="REFAP">REFAP</option>
+            <%end if%>
+          </select>
+      </td>
+      <td width="30" height="61" rowspan="3">
+        <div align="center"><a href="#" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image16','','../../imagens/continua_F02.gif',1)" onClick="move(document.frm1.list1,document.frm1.list2,0)"><img name="Image16" border="0" src="../../imagens/continua_F01.gif" width="24" height="24"></a></div>
+      </td>
+      <td width="296" height="98" rowspan="9" valign="top"> 
+        <select size="8" name="list2">
+          <%
+        set emp=db.execute("SELECT * FROM " & Session("PREFIXO") & "CENARIO WHERE CENA_CD_CENARIO='" & valor2 & "' AND CENA_TX_EMPRESA_RELAC LIKE '%PAPER COMPANIES%'")
+        if emp.eof=false then
+        %>
+          <option value="PAPER COMPANIES">PAPER COMPANIES</option>
+          <%end if%>
+          <%
+        set emp=db.execute("SELECT * FROM " & Session("PREFIXO") & "CENARIO WHERE CENA_CD_CENARIO='" & valor2 & "' AND CENA_TX_EMPRESA_RELAC LIKE '%PETROBRAS%'")
+        if emp.eof=false then
+        %>
+          <option value="PETROBRAS">PETROBRAS</option>
+          <%end if%>
+          <%
+        set emp=db.execute("SELECT * FROM " & Session("PREFIXO") & "CENARIO WHERE CENA_CD_CENARIO='" & valor2 & "' AND CENA_TX_EMPRESA_RELAC LIKE '%REFAP%'")
+        if emp.eof=false then
+        %>
+          <option value="REFAP">REFAP</option>
+          <%end if%>
+        </select>
+      </td>
+    </tr>
+    <tr> 
+      <td width="9" height="25"></td>
+      <td height="25" colspan="2"> 
+        <select size="1" name="selProcesso" onchange="javascript:enviar()">
+          <option value="0">== Selecione o Processo ==</option>
+          <%do until rs_proc.eof=true
+        if trim(str_proc)=trim(rs_proc("PROC_CD_PROCESSO")) then
+        %>
+          <option selected value=<%=rs_proc("PROC_CD_PROCESSO")%>><%=rs_proc("PROC_TX_DESC_PROCESSO")%></option>
+          <%else%>
+          <option value=<%=rs_proc("PROC_CD_PROCESSO")%>><%=rs_proc("PROC_TX_DESC_PROCESSO")%></option>
+          <%
+        end if
+        rs_proc.movenext
+        loop
+        %>
+        </select>
+      </td>
+    </tr>
+    <tr> 
+      <td width="9" height="3" rowspan="2"></td>
+      <td height="3" colspan="2" rowspan="2"><b><font face="Verdana" size="2" color="#330099">Selecione 
+        o Sub-Processo&nbsp;</font></b></td>
+    </tr>
+    <tr> 
+      <td width="30" height="1" rowspan="2" align="center" valign="middle"> 
+        <p align="center"><a href="javascript:;" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('img01511','','../../imagens/continua2_F02.gif',1)" onClick="move(document.frm1.list2,document.frm1.list1,1)"><img name="img01511" border="0" src="../../imagens/continua2_F01.gif" width="24" height="24"></a> 
+      </td>
+    </tr>
+    <tr> 
+      <td width="9" height="1"></td>
+      <td width="447" height="1"> 
+        <select size="1" name="selSubProcesso">
+          <option value="0">== Selecione o Sub-Processo ==</option>
+          <%do until rs_sub.eof=true
+       if trim(str_sub)=trim(rs_sub("SUPR_CD_SUB_PROCESSO")) then
+       %>
+          <option selected value=<%=rs_sub("SUPR_CD_SUB_PROCESSO")%>><%=rs_sub("SUPR_TX_DESC_SUB_PROCESSO")%></option>
+          <%
+		ELSE
+		%>
+          <option value=<%=rs_sub("SUPR_CD_SUB_PROCESSO")%>><%=rs_sub("SUPR_TX_DESC_SUB_PROCESSO")%></option>
+          <%END IF
+		rs_sub.movenext
+		loop
+		%>
+        </select>
+      </td>
+    </tr>
+    <tr> 
+      <td width="9" height="5"></td>
+      <td height="5" colspan="2"><b><font face="Verdana" size="2" color="#330099">Classe 
+        do Cenário</font></b></td>
+      <td width="30" height="19" rowspan="2" align="center">&nbsp;  </td>
+    </tr>
+    <tr> 
+      <td width="9" height="26" rowspan="2"></td>
+      <td height="26" colspan="2" rowspan="2"> 
+        <select size="1" name="selClasse">
+          <option value="0">== Selecione a Classe ==</option>
+          <%
+       do until rs_class.eof=true
+       set atual=db.execute("SELECT * FROM " & Session("PREFIXO") & "CLASSE_CENARIO WHERE CLCE_CD_NR_CLASSE_CENARIO=" & rs_class("CLCE_CD_NR_CLASSE_CENARIO"))
+       valor=atual("CLCE_TX_DESC_CLASSE_CENARIO")
+       IF trim(cen_atual("CLCE_CD_NR_CLASSE_CENARIO"))=trim(rs_class("CLCE_CD_NR_CLASSE_CENARIO")) then
+       %>
+          <option selected value=<%=rs_class("CLCE_CD_NR_CLASSE_CENARIO")%>><%=valor%></option>
+          <%
+       else
+       %>
+          <option value=<%=rs_class("CLCE_CD_NR_CLASSE_CENARIO")%>><%=valor%></option>
+          <%
+       end if
+		rs_class.movenext
+		loop
+		%>
+        </select>
+        &nbsp;&nbsp;&nbsp; 
+        <input type="hidden" name="lotus" size="20" value="<%=cen_atual("CENA_TX_SITUACAO_LOTUS")%>">
+        <input type="hidden" name="ID" size="20" value=<%=VALOR2%>>
+      </td>
+    </tr>
+    <tr> 
+      <td width="30" height="61" rowspan="3"></td>
+    </tr>
+    <tr> 
+      <td width="9" height="23"></td>
+      <td width="447" height="23"><b><font face="Verdana" size="2" color="#330099">Título 
+        do Cenário</font></b></td>
+    </tr>
+    <tr> 
+      <td width="9" height="26"></td>
+      <td height="26" colspan="2"> 
+        <input type="text" name="txtTitulo" size="50" value="<%=cen_atual("CENA_TX_TITULO_CENARIO")%>">
+      </td>
+      <td width="296" height="26">&nbsp;</td>
+    </tr>
+    <tr> 
+      <td width="9" height="21"></td>
+      <td width="447" height="21"> 
+        <div align="left"> 
+          <div align="right"></div>
+        </div>
+        <div align="left"><b><font face="Verdana" size="2" color="#330099">Data 
+          prevista para t&eacute;rmino: </font></b></div>
+      </td>
+      <td height="21" width="7">&nbsp;</td>
+      <td height="21" colspan="3">&nbsp;</td>
+    </tr>
+    <tr> 
+      <td width="9" height="21"></td>
+      <td height="21" colspan="5"><b><font face="Verdana" size="2" color="#330099"> 
+        <% ls_Dia = Right("00" & Day(cen_atual("CENA_DT_PREV_TERMINO")),2)
+		     ls_Mes = Right("00" & Month(cen_atual("CENA_DT_PREV_TERMINO")),2)
+			 ls_Ano = Right("0000" & Year(cen_atual("CENA_DT_PREV_TERMINO")),4)
+			 ls_DATA = ls_Dia & "/" & ls_Mes & "/" & ls_Ano
+			 'response.write ls_DATA
+			 Select case ls_Dia
+			   Case "00"
+			      ls_Selecionado0 = "selected"
+			   Case "01"
+			      ls_Selecionado01 = "selected"
+			   Case "02"
+			      ls_Selecionado02 = "selected"
+			   Case "03"
+			      ls_Selecionado03 = "selected"
+			   Case "04"
+			      ls_Selecionado04 = "selected"
+			   Case "05"
+			      ls_Selecionado05 = "selected"
+			   Case "06"
+			      ls_Selecionado06 = "selected"
+			   Case "07"
+			      ls_Selecionado07 = "selected"
+			   Case "08"
+			      ls_Selecionado08 = "selected"
+			   Case "09"
+			      ls_Selecionado09 = "selected"
+			   Case "10"
+			      ls_Selecionado10 = "selected"
+			   Case "11"
+			      ls_Selecionado11 = "selected"
+			   Case "12"
+			      ls_Selecionado12 = "selected"
+			   Case "13"
+			      ls_Selecionado13 = "selected"
+			   Case "14"
+			      ls_Selecionado14 = "selected"
+			   Case "15"
+			      ls_Selecionado15 = "selected"
+			   Case "16"
+			      ls_Selecionado16 = "selected"
+			   Case "17"
+			      ls_Selecionado17 = "selected"
+			   Case "18"
+			      ls_Selecionado18 = "selected"
+			   Case "19"
+			      ls_Selecionado19 = "selected"
+			   Case "20"
+			      ls_Selecionado20 = "selected"
+			   Case "21"
+			      ls_Selecionado21 = "selected"
+			   Case "22"
+			      ls_Selecionado22 = "selected"
+			   Case "23"
+			      ls_Selecionado23 = "selected"
+			   Case "24"
+			      ls_Selecionado24 = "selected"
+			   Case "25"
+			      ls_Selecionado25 = "selected"
+			   Case "26"
+			      ls_Selecionado26 = "selected"
+			   Case "27"
+			      ls_Selecionado27 = "selected"
+			   Case "28"
+			      ls_Selecionado28 = "selected"
+			   Case "29"
+			      ls_Selecionado29 = "selected"
+			   Case "30"
+			      ls_Selecionado30 = "selected"
+			   Case "31"
+			      ls_Selecionado31 = "selected"
+	    End select
+		   %>
+        <select name="selDia">
+          <option value="0" <%=ls_Selecionado0%>>Dia</option>
+          <option value="01" <%=ls_Selecionado01%>>01</option>
+          <option value="02" <%=ls_Selecionado02%>>02</option>
+          <option value="03" <%=ls_Selecionado03%>>03</option>
+          <option value="04" <%=ls_Selecionado04%>>04</option>
+          <option value="05" <%=ls_Selecionado05%>>05</option>
+          <option value="06" <%=ls_Selecionado06%>>06</option>
+          <option value="07" <%=ls_Selecionado07%>>07</option>
+          <option value="08" <%=ls_Selecionado08%>>08</option>
+          <option value="09" <%=ls_Selecionado09%>>09</option>
+          <option value="10" <%=ls_Selecionado10%>>10</option>
+          <option value="11" <%=ls_Selecionado11%>>11</option>
+          <option value="12" <%=ls_Selecionado12%>>12</option>
+          <option value="13" <%=ls_Selecionado13%>>13</option>
+          <option value="14" <%=ls_Selecionado14%>>14</option>
+          <option value="15" <%=ls_Selecionado15%>>15</option>
+          <option value="16" <%=ls_Selecionado16%>>16</option>
+          <option value="17" <%=ls_Selecionado17%>>17</option>
+          <option value="18" <%=ls_Selecionado18%>>18</option>
+          <option value="19" <%=ls_Selecionado19%>>19</option>
+          <option value="20" <%=ls_Selecionado20%>>20</option>
+          <option value="21" <%=ls_Selecionado21%>>21</option>
+          <option value="22" <%=ls_Selecionado22%>>22</option>
+          <option value="23" <%=ls_Selecionado23%>>23</option>
+          <option value="24" <%=ls_Selecionado24%>>24</option>
+          <option value="25" <%=ls_Selecionado25%>>25</option>
+          <option value="26" <%=ls_Selecionado26%>>26</option>
+          <option value="27" <%=ls_Selecionado27%>>27</option>
+          <option value="28" <%=ls_Selecionado28%>>28</option>
+          <option value="29" <%=ls_Selecionado29%>>29</option>
+          <option value="30" <%=ls_Selecionado30%>>30</option>
+          <option value="31" <%=ls_Selecionado31%>>31</option>
+        </select>
+        <%
+ 			 Select case ls_Mes
+			   Case "00"
+			      ls_Selecionado0 = "selected"
+			   Case "01"
+			      ls_Selecionado01 = "selected"
+			   Case "02"
+			      ls_Selecionado02 = "selected"
+			   Case "03"
+			      ls_Selecionado03 = "selected"
+			   Case "04"
+			      ls_Selecionado04 = "selected"
+			   Case "05"
+			      ls_Selecionado05 = "selected"
+			   Case "06"
+			      ls_Selecionado06 = "selected"
+			   Case "07"
+			      ls_Selecionado07 = "selected"
+			   Case "08"
+			      ls_Selecionado08 = "selected"
+			   Case "09"
+			      ls_Selecionado09 = "selected"
+			   Case "10"
+			      ls_Selecionado10 = "selected"
+			   Case "11"
+			      ls_Selecionado11 = "selected"
+			   Case "12"
+			      ls_Selecionado12 = "selected"
+			End select
+
+		  %>
+        <select name="selMes">
+          <option value="0" <%=ls_Selecionado0%>>Mes</option>
+          <option value="01" <%=ls_Selecionado01%>>01</option>
+          <option value="02" <%=ls_Selecionado02%>>02</option>
+          <option value="03" <%=ls_Selecionado03%>>03</option>
+          <option value="04" <%=ls_Selecionado04%>>04</option>
+          <option value="05" <%=ls_Selecionado05%>>05</option>
+          <option value="06" <%=ls_Selecionado06%>>06</option>
+          <option value="07" <%=ls_Selecionado07%>>07</option>
+          <option value="08" <%=ls_Selecionado08%>>08</option>
+          <option value="09" <%=ls_Selecionado09%>>09</option>
+          <option value="10" <%=ls_Selecionado10%>>10</option>
+          <option value="11" <%=ls_Selecionado11%>>11</option>
+          <option value="12" <%=ls_Selecionado12%>>12</option>
+        </select>
+        <%
+ 			 Select case ls_Ano
+			   Case "0000"
+			      ls_Selecionado0 = "selected"
+			   Case "2003"
+			      ls_Selecionado01 = "selected"
+			   Case "2004"
+			      ls_Selecionado02 = "selected"
+			End select
+
+		  %>
+        <select name="selAno">
+          <option value="0"  <%=ls_Selecionado0%>>Ano</option>
+          <option value="2003" <%=ls_Selecionado01%>>2003</option>
+          <option value="2004" <%=ls_Selecionado02%>>2004</option>
+        </select>
+        </font></b></td>
+    </tr>
+    <tr> 
+      <td width="9" height="21"> </td>
+      <td height="21" colspan="5"><b><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><b><font color="#330099">Respons&aacute;vel:</font></b></font> 
+        </b></td>
+    </tr>
+    <tr> 
+      <td width="9" height="2"></td>
+      <td height="2" colspan="5"><b> 
+        <input type="text" name="txtResponsavel" maxlength="70" value="<%=cen_atual("CENA_TX_RESPONSAVEL")%>">
+        </b></td>
+    </tr>
+    <tr> 
+      <td width="9" height="2"></td>
+      <td height="2" colspan="5"><b><font face="Verdana" size="2" color="#330099">Descrição 
+        do Cenário</font></b></td>
+    </tr>
+    <tr> 
+      <td width="9" height="100"></td>
+      <td height="100" colspan="5"> 
+        <textarea rows="4" name="txtDescricao" cols="68"><%=cen_atual("CENA_TX_DESC_CENARIO")%></textarea>
+      </td>
+    </tr>
+    <tr> 
+      <td width="9" height="21"></td>
+      <td height="21" colspan="5"><b><font face="Verdana" size="2" color="#330099">Entrada</font></b></td>
+    </tr>
+    <tr> 
+      <td width="9" height="25"></td>
+      <td height="25" colspan="5"> 
+        <input type="text" name="txtEntrada" size="69" value="<%=cen_atual("CENA_TX_ENTRADA")%>">
+      </td>
+    </tr>
+    <tr> 
+      <td width="9" height="21"></td>
+      <td height="21" colspan="5"><b><font face="Verdana" size="2" color="#330099">Saída</font></b></td>
+    </tr>
+    <tr> 
+      <td width="9" height="25"></td>
+      <td height="25" colspan="5"> 
+        <input type="text" name="txtSaida" size="69" value="<%=cen_atual("CENA_TX_SAIDA")%>">
+      </td>
+    </tr>
+  </table>
+  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</form>
+</body>
+
+</html>

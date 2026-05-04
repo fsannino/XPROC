@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>Aguarde, Carregando Sistema...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<script language="JavaScript">
+//self.locationbar.visible=0;
+//self.menubar.visible=false;
+//self.toolbar.personalbar.visible=false;
+var message="SINERGIA - Conteúdo Protegido";
+
+function click(e) {
+if (document.all) {
+if (event.button == 2) {
+alert(message);
+return false;
+}
+}
+if (document.layers) {
+if (e.which == 3) {
+alert(message);
+return false;
+}
+}
+}
+if (document.layers) {
+document.captureEvents(Event.MOUSEDOWN);
+}
+document.onmousedown=click;
+
+</script>
+
+<SCRIPT>
+function fullWindow(url) {
+
+	var str = "left=0,screenX=0,top=0,screenY=0,resizable=no,scrollbars=yes,toolbar=no,location=no";
+
+	var a = document.URL;
+	var n=0;
+
+	for (var i = 1 ; i < 1000; i++)
+	{
+	var final=a.slice(0,i)
+	var t=a.slice(i-1,i);
+	if (t=='/')
+	{
+	n = n + 1;
+	}
+	if(n == 4)
+	{
+	i = 1000;
+	}
+	}
+	var tam=final.length;
+	var caminho = final.slice(0,tam-1);
+
+    var valor=caminho + "/imagens/func_tran_nao_marcada.gif"
+
+
+    if (window.screen) {
+      var ah = screen.availHeight - 30;
+      var aw = screen.availWidth - 10;
+      str += ",height=" + ah;
+      str += ",innerHeight=" + ah;
+      str += ",width=" + aw;
+      str += ",innerWidth=" + aw;
+    }
+	//alert(caminho)
+    win=window.open(caminho+url, "w", str);
+	//win.close()
+    //window.close();
+	// http://localhost/xproc/indexA.asp
+}
+</SCRIPT>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+    opener.opener = opener;
+    opener.close();
+//-->
+</script>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<p>&nbsp;</p>
+</body>
+<script language="javascript">
+	function fechar()
+	{
+		//window.close();
+		//win.close()
+	}
+	//onLoad=fullWindow('/indexA.asp')
+	fullWindow('/indexA.asp')
+	setTimeout('fechar()',10);
+	//window.top.frame2.focus();
+	//window.top.frame2.print();
+</script>
+</html>

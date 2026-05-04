@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>Aguarde, Carregando Sistema...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_openBrWindow(theURL,winName,features) { //v2.0
+  window.open(theURL,winName,features);
+}
+function MM_openBrWindow2(theURL,winName,features) { //v2.0
+   var str2 = "left=0,screenX=0,top=0,screenY=0," + features 
+   var str = ""
+   //alert("aqqw")
+   self.toolbar=true
+   self.statusbar=true
+   self.scrollbars=true
+   self.resizable=true
+   self.menubar=true
+   self.locationbar=true
+   self.personalbar=true   
+   //alert("aqui")
+    if (window.screen) {
+      var ah = screen.availHeight - 70;
+      var aw = screen.availWidth - 10;
+      str += ",height=" + ah;
+      str += ",innerHeight=" + ah;
+      str += ",width=" + aw;
+      str += ",innerWidth=" + aw;
+    }
+  str2 = str2 + str
+  //alert(str2)
+  window.open(theURL,winName,str2);
+}
+//-->
+</script>
+</head>
+
+<script language="JavaScript">
+
+var message="SINERGIA - Conteúdo Protegido"; 
+
+function click(e) {
+if (document.all) {
+if (event.button == 2) {
+alert(message);
+return false;
+}
+}
+if (document.layers) {
+if (e.which == 3) {
+alert(message);
+return false;
+}
+}
+}
+if (document.layers) {
+document.captureEvents(Event.MOUSEDOWN);
+}
+document.onmousedown=click;
+
+</script>
+
+<SCRIPT>
+function fullWindow(url) { 
+    
+	var str = "left=0,screenX=0,top=0,screenY=0,resizable=no,scrollbars=yes";
+	
+	var a = document.URL;
+	var n=0;
+
+	for (var i = 1 ; i < 1000; i++)
+	{
+	var final=a.slice(0,i)
+	var t=a.slice(i-1,i);
+	if (t=='/')
+	{
+	n = n + 1;
+	}
+	if(n == 4)
+	{
+	i = 1000;
+	}
+	}
+	var tam=final.length;
+	var caminho = final.slice(0,tam-1);
+
+    var valor=caminho + "/imagens/func_tran_nao_marcada.gif"
+
+	
+    if (window.screen) {
+      var ah = screen.availHeight - 100;
+      var aw = screen.availWidth - 10;
+      str += ",height=" + ah;
+      str += ",innerHeight=" + ah;
+      str += ",width=" + aw;
+      str += ",innerWidth=" + aw;
+    }
+	//alert(caminho)
+    win=window.open(caminho+url, "w", str);
+    //window.close();    
+	// http://S6000WS10.corp.petrobras.biz/xproc/indexA.asp
+} 
+</SCRIPT>
+
+<body bgcolor="#FFFFFF" text="#000000" onLoad="MM_openBrWindow2('indexA_xpep.asp','principal01','menubar=yes,toolbar=yes,status=yes,scrollbars=yes,resizable=yes')">
+
+</body>
+</html>

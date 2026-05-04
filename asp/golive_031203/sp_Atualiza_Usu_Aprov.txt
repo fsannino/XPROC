@@ -1,0 +1,106 @@
+
+CREATE PROCEDURE dbo.Atualiza_Usu_Aprov  AS
+
+SET NOCOUNT OFF
+
+DECLARE		@curso_chave	varchar(4),
+		@curso_curso	varchar(6),
+		                                             	                       
+DECLARE	CUR_CURSO	CURSOR	FOR
+		SELECT     CURS_CD_CURSO
+		FROM         COGEST.CURSO
+		
+OPEN	CUR_CURSO
+
+FETCH	NEXT	FROM	CUR_CURSO	INTO	
+	@curso_curso
+
+WHILE	@@FETCH_STATUS	<>	-1
+
+        BEGIN
+
+
+	DECLARE	CUR_AROV_INTRA CURSOR	FOR
+			SELECT	CHAVE
+			FROM	[S5200DB01\DB01].[INTRANET].[dbo].TABINSCRITOS
+			WHERE	COD_DISCIPLINA = @curso_curso	
+
+	OPEN	CUR_AROV_INTRA	
+
+	FETCH	NEXT	FROM	CUR_AROV_INTRA INTO	
+		@curso_chave
+
+	WHILE	@@FETCH_STATUS	<>	-1
+          
+		DECLARE	CUR_MAP	CURSOR	FOR
+			SELECT	USAP_CD_USUARIO
+			FROM		dbo.USUARIO_APROVADO
+			WHERE	USAP_CD_USUARIO= @caduser_chave
+			AND 	CURS_CD_CURSO= @curso_curso
+
+		OPEN	CUR_MAP
+
+		FETCH	NEXT	FROM	CUR_MAP	INTO	
+			@map_nome
+
+		IF	@@FETCH_STATUS	= 	-1
+			INSERT INTO USUARIO_MAPEAMENTO 
+				(usma_tx_nome_usuario, 
+				 usma_cd_status, 
+				 usma_in_validado, 
+				 usma_tx_matricula, 
+				 usma_tx_empresa, 
+				 usua_tx_ramal, 
+				 perf_cd_perfil, 
+				 orme_cd_org_menor, 
+				 usma_cd_usuario, 
+				 usma_tx_operacao_atua,
+				 user_nm_cargo)
+			VALUES 	(@caduser_nome, 
+				 2, 
+				 'N', 
+				 @caduser_matricula, 
+				 @caduser_empresa, 
+				 @caduser_ramal, 
+				 4, 
+				 @caduser_lotacao, 
+				 @caduser_chave, 
+				 'I', 
+				 @caduser_cargo)
+	ELSE
+		IF @map_nome <> @caduser_nome
+			BEGIN	
+				INSERT INTO USUARIO_HISTORICO (usma_cd_usuario, ushi_nm_nome_antigo, ushi_nm_nome_atual)
+				VALUES (@caduser_chave, @map_nome, @caduser_nome)
+	
+				update USUARIO_MAPEAMENTO
+				set 	orme_cd_org_menor = 	 @caduser_lotacao,
+					usma_tx_nome_usuario = @caduser_nome,
+					usma_tx_matricula = 	 @caduser_matricula,
+					usma_tx_empresa = 	 @caduser_empresa,
+					usua_tx_ramal = 	 @caduser_ramal
+				where	usma_cd_usuario = 	 @caduser_chave
+			END
+		ELSE
+			update USUARIO_MAPEAMENTO
+			set 	orme_cd_org_menor = 	 @caduser_lotacao,
+				usma_tx_nome_usuario = @caduser_nome,
+				usma_tx_matricula = 	 @caduser_matricula,
+				usma_tx_empresa = 	 @caduser_empresa,
+				usua_tx_ramal = 	 @caduser_ramal,
+				usma_nm_cargo = 	 @caduser_cargo
+			where	usma_cd_usuario = 	 @caduser_chave
+		
+		CLOSE		CUR_MAP
+		DEALLOCATE	CUR_MAP
+	
+	FETCH	NEXT	FROM	CUR_CURSO	INTO	
+		@caduser_lotacao, @caduser_chave, @caduser_nome, @caduser_matricula, @caduser_empresa, @caduser_ramal, @caduser_cargo
+        END
+	
+CLOSE		CUR_CURSO
+DEALLOCATE	CUR_CURSO
+
+SET NOCOUNT ON
+
+GO

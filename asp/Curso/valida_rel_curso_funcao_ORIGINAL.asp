@@ -1,0 +1,286 @@
+<%
+curso=request("curso")
+
+mega=request("mega")
+
+func=request("txtTrans")
+'RESPONSE.Write(func)
+'RESPONSE.End()
+set db = Server.CreateObject("ADODB.Connection")
+db.Open Session("Conn_String_Cogest_Gravacao")
+
+db.execute("DELETE FROM " & Session("PREFIXO") & "CURSO_FUNCAO WHERE CURS_CD_CURSO='" & curso & "'")
+
+'dim a
+'a = split(str_valor,",")
+'for i = LBound(a) to UBound(a)
+'  response.Write(a(i) & "<br>")
+'next
+
+str_valor = func
+
+if right(str_valor,1)<>"," then
+    str_valor = str_valor + ","
+end if
+tamanho = Len(str_valor)
+If Left(str_valor, 1) = "," Then
+    tamanho = tamanho - 1
+    str_valor = Right(str_valor, tamanho)
+End If
+tamanho = Len(str_valor)
+contador = 1
+Do Until contador = tamanho + 1
+    str_atual = Left(str_valor, contador)
+    quantos = quantos + 1
+    str_temp = Right(str_atual, 1)
+    tamanho_atual = Len(str_atual)
+    If str_temp = "," Then
+        str_atual = Right(str_atual, quantos)
+        str_atual = Left(str_atual, quantos - 1)    
+		'RESPONSE.Write(str_atual)
+		'RESPONSE.End()    
+		call Grava_Trans(str_atual)
+		valor_total=valor_total+1	   		
+        quantos = 0
+    End If
+    contador = contador + 1
+Loop
+
+Sub Grava_Trans(strC)
+
+	'ssql=""
+	'ssql="INSERT INTO " & Session("PREFIXO") & "CURSO_FUNCAO "
+	'ssql=ssql+"VALUES('" & strC & "',"
+	'ssql=ssql+"'I','" & ucase(curso) & "','" & Session("CdUsuario") & "',GETDATE())"	
+	'on error resume next	
+	'db.execute(ssql)	
+	''if err.number=0 then
+	'	'call grava_log(ucase(curso),"" & Session("PREFIXO") & "CURSO_FUNCAO","I",1)
+	'end if
+
+	str_Sql = ""
+	str_Sql = str_Sql & " INSERT INTO CURSO_FUNCAO ( "
+	str_Sql = str_Sql & " FUNE_CD_FUNCAO_NEGOCIO"
+	str_Sql = str_Sql & " , CURS_CD_CURSO"
+	str_Sql = str_Sql & " , CUFU_TX_INDICA_MOSTRA"
+	str_Sql = str_Sql & " , ATUA_TX_OPERACAO"
+	str_Sql = str_Sql & " , ATUA_CD_NR_USUARIO"
+	str_Sql = str_Sql & " , ATUA_DT_ATUALIZACAO"
+	str_Sql = str_Sql & " ) VALUES ("
+	str_Sql = str_Sql & "'" & strC & "'"
+	str_Sql = str_Sql & ",'" & ucase(curso) & "'"
+	str_Sql = str_Sql & ",'S'"
+	str_Sql = str_Sql & ",'I','" & Session("CdUsuario") & "',GETDATE())"
+	'response.Write(str_Sql)
+	'response.End()
+	'on error resume next	
+	db.execute(str_Sql)
+	
+end sub
+
+response.redirect "rel_curso_func_transacao.asp?curso=" & curso
+
+%>
+<html>
+<head>
+<title>SINERGIA # XPROC # Processos de Negócio</title>
+</head>
+
+<script language="JavaScript">
+
+
+</script>
+
+<script language="javascript" src="../Planilhas/js/troca_lista.js"></script>
+
+<body topmargin="0" leftmargin="0" bgcolor="#FFFFFF">
+<form method="POST" action="valida_cad_curso.asp" name="frm1">
+        <input type="hidden" name="txtImp" size="20"><input type="hidden" name="txtQua" size="20">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#330099">
+  <tr>
+    <td width="20%" height="20">&nbsp;</td>
+    <td width="44%" height="60">&nbsp;</td>
+    <td width="36%" valign="top"> 
+      <table width="154" border="0" align="right" cellpadding="0" cellspacing="0" bgcolor="#0000CC">
+        <tr> 
+          <td bgcolor="#330099" width="39" valign="middle" align="center"> 
+            <div align="center">
+              <p align="center"><a href="JavaScript:history.back()"><img border="0" src="../Funcao/voltar.gif" width="30" height="30"></a></div>
+          </td>
+          <td bgcolor="#330099" width="36" valign="middle" align="center"> 
+            <div align="center"><a href="JavaScript:history.forward()"><img border="0" src="../Funcao/avancar.gif" width="30" height="30"></a></div>
+          </td>
+          <td bgcolor="#330099" width="27" valign="middle" align="center"> 
+            <div align="center"><a href="JavaScript:window.external.AddFavorite('http://S6000WS12.corp.petrobras.biz/sinergia_total/index.htm','Sinergia  - X-Total')"><img border="0" src="../Funcao/favoritos.gif" width="30" height="30"></a></div>
+          </td>
+        </tr>
+        <tr> 
+          <td bgcolor="#330099" height="12" width="39" valign="middle" align="center"> 
+            <div align="center"><a href="javascript:print()"><img border="0" src="../Funcao/imprimir.gif" width="30" height="30"></a></div>
+          </td>
+          <td bgcolor="#330099" height="12" width="36" valign="middle" align="center"> 
+            <div align="center"><a href="JavaScript:history.go()"><img border="0" src="../Funcao/atualizar.gif" width="30" height="30"></a></div>
+          </td>
+          <td bgcolor="#330099" height="12" width="27" valign="middle" align="center"> 
+            <div align="center"><a href="../../indexA.asp"><img src="../Funcao/home.gif" width="19" height="20" border="0"></a>&nbsp;</div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr bgcolor="#00FF99">
+    <td colspan="3" height="20">
+      <table width="625" border="0" align="center">
+        <tr>
+            <td width="26"></td>
+          <td width="50"></td>
+          <td width="26"></td>
+          <td width="195"></td>
+            <td width="27"></td>  <td width="50"></td>
+          <td width="28"></td>
+          <td width="26">&nbsp;</td>
+          <td width="159"></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+        
+  <table width="847" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="845">
+      </td>
+    </tr>
+    <tr>
+      <td width="845">
+        <p align="center"><font face="Verdana" color="#330099" size="3">Relação
+          Curso x Furção de Negócio</font>
+      </td>
+    </tr>
+    <tr>
+      <td width="845">&nbsp;</td>
+    </tr>
+  </table>
+  <table border="0" width="849" height="87">
+          <tr>
+            
+      <td width="205" height="29"></td>
+            
+      <td width="93" height="29" valign="middle" align="left"></td>
+            
+      <td width="531" height="29" valign="middle" align="left" colspan="2"> 
+      <%if err.number=0 then%>
+      <b><font face="Verdana" color="#330099" size="2">O Curso e Funções de
+      Negócio foram
+      relacionados com
+      Sucesso</font></b> 
+      </td>
+            
+          </tr>
+      <%else%>    
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="531" colspan="2"> 
+      <b><font face="Verdana" size="2" color="#800000">Houve um erro no cadastro
+      do registro - <%=err.description%></font></b> 
+      </td>
+          </tr>
+          <%end if%>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="531" colspan="2"> 
+      </td>
+          </tr>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="531" colspan="2"> 
+      </td>
+          </tr>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="531" colspan="2"> 
+      </td>
+          </tr>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="93"> 
+        <a href="../../indexA.asp"> 
+        <img border="0" src="../../imagens/selecao_F02.gif" align="right" width="22" height="20"></a></td>
+            
+      <td height="1" valign="middle" align="left" width="439"> 
+        <font face="Verdana" color="#330099" size="2">Retornar para Tela
+        Principal</font></td>
+          </tr>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="93"> 
+        <a href="rel_curso_funcao.asp?mega=<%=mega%>&amp;curso=<%=curso%>"> 
+        <img border="0" src="../../imagens/selecao_F02.gif" align="right" width="22" height="20"></a></td>
+            
+      <td height="1" valign="middle" align="left" width="439"> 
+        <font face="Verdana" color="#330099" size="2">Retornar para Tela de Relacionar Curso x
+        Fun&ccedil;&atilde;o R/3</font></td>
+          </tr>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="93"> 
+      </td>
+            
+      <td height="1" valign="middle" align="left" width="439"> 
+      </td>
+          </tr>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="93"> 
+      </td>
+            
+      <td height="1" valign="middle" align="left" width="439"> 
+      </td>
+          </tr>
+          <tr>
+            
+      <td width="205" height="1"></td>
+            
+      <td width="93" height="1" valign="middle" align="left"></td>
+            
+      <td height="1" valign="middle" align="left" width="531" colspan="2"> 
+      </td>
+          </tr>
+        </table>
+  </form>
+
+</body>
+
+</html>

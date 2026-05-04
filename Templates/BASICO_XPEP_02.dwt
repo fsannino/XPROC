@@ -1,0 +1,324 @@
+<%@LANGUAGE="VBSCRIPT" CODEPAGE="1252"%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>Untitled Document</title>
+<!-- TemplateEndEditable -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- TemplateBeginEditable name="head" -->
+<!-- TemplateEndEditable -->
+<style type="text/css">
+<!--
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+-->
+</style>
+<link href="/css/biblioteca.css" rel="stylesheet" type="text/css">
+<link href="../css/objinterface.css" rel="stylesheet" type="text/css">
+<link href="../css/texinterface.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+<!--
+.style3 {
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+-->
+</style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<%=ls_Script%>
+<script type= "text/javascript" language= "JavaScript">
+<!--
+goMenus();
+//-->
+</script>
+	<!-- INICIO PARA O TOPO DA PAGINA -->
+	<div id="Layer1" style="position:absolute; left:20px; top:10px; width:134px; height:53px; z-index:1"><img src="../asp/xpep/img/000005.gif" alt=":: Logo Sinergia" width="134" height="53" border="0" usemap="#Map2"> 
+	  <map name="Map2">
+	    <area shape="rect" coords="6,7,129,49">
+	  </map>
+</div>
+	<!-- FIM TOPO -->
+
+	<!-- INICIO PARA CURSOS FUNCIONAIS -->
+	<div id="cursos_funcionais" style="position:absolute; width:168px; height:120px; z-index:1; left: 138px; top: 66px; visibility: hidden"> 
+	  <div align="center"> </div>
+	  <div align="center"> 
+	    <table width="166" border="0" cellspacing="0" cellpadding="0">
+	      <tr> 
+	        <td width="15" height="69" valign="top"><img src="../asp/xpep/img/_0.gif" width="15" height="80" border="0"  onMouseOver="MM_showHideLayers('cursos_funcionais','','hide')"></td>
+	        <td width="136" height="69"><table width="136" height="86" border="0" cellpadding="0" cellspacing="0" background="img/000015_6.gif">
+	            <tr> 
+					<td width="136" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/lista_Curso.asp?pOpcao=MAN&Emp=PB" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Manutenção</font></b></a></td>
+	            </tr>
+	            <tr> 
+	              <td width="136" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	            </tr>
+	            <tr> 
+					<td width="136" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/lista_Curso.asp?pOpcao=EMP&Emp=PB" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Empreendimento</font></b></a></td>
+	            </tr>
+	            <tr> 
+	              <td width="136" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	            </tr>
+	            <tr> 
+					<td width="136" height="13"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/lista_Curso.asp?pOpcao=RHU&Emp=PB" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Recursos Humanos</font></b></a></td>
+	            </tr>
+	            <tr> 
+	              <td width="136" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	            </tr>
+	            <tr> 
+					<td width="136" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/lista_Curso.asp?pOpcao=PLC&Emp=PB" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Planej e Controle</font></b></a></td>
+	            </tr>
+	            <tr> 
+	              <td width="136" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	            </tr>
+	            <tr> 
+					<td width="136" height="13"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/lista_Curso.asp?pOpcao=MES&Emp=PB" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Mat, Equip e Serviços</font></b></a></td>
+	            </tr>
+	            <tr> 
+	              <td width="136" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	            </tr>
+	            <tr> 
+					<td width="136" height="18"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/lista_Curso.asp?pOpcao=POS&Emp=PB" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Poços</font></b></a></td>
+	            </tr>	                      
+	          </table>          
+            </td>
+			<td width="15" height="69" valign="top"><img src="../asp/xpep/img/_0.gif" width="15" height="80" border="0" onMouseOver="MM_showHideLayers('cursos_funcionais','','hide')"></td>
+	      </tr>
+	      <tr> 
+	        <td height="40" colspan="3" valign="top"><img src="../asp/xpep/img/_0.gif" width="164" height="38" border="0" onMouseOver="MM_showHideLayers('cursos_funcionais','','hide')"></td>
+	      </tr>
+	    </table>
+	    <p>&nbsp;</p>
+	  </div>
+	</div>
+	<!-- FIM PARA CURSOS FUNCIONAIS -->
+
+	<!-- INICIO PARA CURSOS BÁSICOS -->
+	<div id="cursos_basicos" style="position:absolute; width:178px; height:100px; z-index:1; left: 250px; top: 66px; visibility: hidden"> 
+	  <div align="center"> </div>
+	    
+	  <div align="center"> 
+	    <table width="176" height="80" border="0" cellpadding="0" cellspacing="0">
+	      <tr> 
+	        <td width="15" height="32"><img src="../asp/xpep/img/_0.gif" width="15" height="32" border="0"  onMouseOver="MM_showHideLayers('cursos_basicos','','hide')"></td>
+	        <td width="160" height="15" valign="top" background="img/000017_3.gif">
+				<table width="160" height="30" border="0" cellpadding="0" cellspacing="0">
+				  <tr> 
+				    <td width="160" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="http://campus.petrobras.com.br/course/sinergia/prebso/pre202_bso/DATA/main.htm" class="pers" target="_new"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">SAP R/3 - Conc. Bas</font></b></a></td>
+				  </tr>
+				  <tr> 
+				    <td width="160" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+				  </tr>
+				  <tr> 
+				    <td width="160" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="http://campus.petrobras.com.br/course/sinergia/prebso/pre203_bso/DATA/main.htm" class="pers" target="_new"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">SAP R/3 - Navegação</font></b></a></td>
+				  </tr>
+				  <tr> 
+				    <td width="160" height="2"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+				  </tr>
+				  <tr> 
+				    <td width="160" height="20"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="http://campus.petrobras.com.br/course/sinergia/prebso/pre204_bso/DATA/main.htm" class="pers" target="_new"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">PRE204 - Introd SAP R/3</font></b></a></td>
+				  </tr>
+				</table>
+	        </td>
+	        <td width="15" height="32" valign="top"><img src="../asp/xpep/img/_0.gif" width="14" height="20" border="0"  onMouseOver="MM_showHideLayers('cursos_basicos','','hide')"></td>
+	      </tr>
+	      <tr valign="top"> 
+	        <td height="40" colspan="3"><img src="../asp/xpep/img/_0.gif" width="164" height="38" border="0"  onMouseOver="MM_showHideLayers('cursos_basicos','','hide')"></td>
+	      </tr>
+	    </table>
+	    <p>&nbsp;</p>
+	  </div>
+	</div>
+	<!-- FIM CURSOS BÁSICOS -->
+
+
+	<!-- INICIO PARA FAQ -->
+	<div id="FAQ" style="position:absolute; width:168px; height:80px; z-index:1; left: 480px; top: 66px; visibility: hidden"> 
+	  <div align="center"> </div>
+	    
+	  <div align="center"> 
+	    <table width="166" height="80" border="0" cellpadding="0" cellspacing="0">
+	      <tr> 
+	        <td width="15" height="32"><img src="../asp/xpep/img/_0.gif" width="15" height="32" border="0"  onMouseOver="MM_showHideLayers('FAQ','','hide')"></td>
+	        <td width="125" height="15" valign="top" background="img/000017_3.gif">
+				<table width="125" height="30" border="0" cellpadding="0" cellspacing="0">
+				  <tr> 
+				    <td width="125" height="16"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/inc_Perg_Resp.asp" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Incluir</font></b></a></td>
+				  </tr>
+				  <tr> 
+				    <td width="125" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+				  </tr>
+				  <tr> 
+				    <td width="125" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/param_Perg_Resp_manut.asp" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Alterar/Excluir</font></b></a></td>
+				  </tr>	
+				   <tr> 
+				    <td width="125" height="3"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+				  </tr>
+				  <tr> 
+				    <td width="125" height="18"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/param_Perg_Resp.asp" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Consultar</font></b></a></td>
+				  </tr>				  
+				</table> 
+	        </td>
+	        <td width="15" height="32" valign="top"><img src="../asp/xpep/img/_0.gif" width="14" height="20" border="0" onMouseOver="MM_showHideLayers('FAQ','','hide')"></td>
+	      </tr>
+	      <tr valign="top"> 
+	        <td height="40" colspan="3"><img src="../asp/xpep/img/_0.gif" width="164" height="38" border="0" onMouseOver="MM_showHideLayers('FAQ','','hide')"></td>
+	      </tr>
+	    </table>
+	    <p>&nbsp;</p>
+	  </div>
+	</div>
+	<!-- FIM FAQ -->
+
+
+	<!-- INICIO DO DOWNLOAD -->
+	<div id="download" style="position:absolute; width:168px; height:100px; z-index:1; left: 513px; top: 66px; visibility: hidden"> 
+	  <div align="center"> </div>
+	    
+	  <div align="center"> 
+	    <table width="166" height="20" border="0" cellpadding="0" cellspacing="0">
+	      <tr> 
+	        <td width="15" height="20"><img src="../asp/xpep/img/_0.gif" width="15" height="20" border="0"  onMouseOver="MM_showHideLayers('download','','hide')"></td>
+	        <td width="136" height="20" valign="top" background="img/000017_1.gif">
+				<table width="136" height="12" border="0" cellpadding="0" cellspacing="0">				  
+				  <tr> 
+				    <td width="136" height="2"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+				  </tr>
+				  <tr> 
+				    <td width="136" height="12"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="Guia.pdf" class="pers" target="_new"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Download</font></b></a></td>
+				  </tr>				  
+				</table> 
+	        </td>
+	        <td width="15" height="12" valign="top"><img src="../asp/xpep/img/_0.gif" width="14" height="20" border="0"  onMouseOver="MM_showHideLayers('download','','hide')"></td>
+	      </tr>
+	      <tr valign="top"> 
+	        <td height="20" colspan="3"><img src="../asp/xpep/img/_0.gif" width="164" height="38" border="0"  onMouseOver="MM_showHideLayers('download','','hide')"></td>
+	      </tr>
+	    </table>
+	    <p>&nbsp;</p>
+	  </div>
+	</div>
+	<!-- FIM DOWNLOAD -->
+	
+	
+	<!-- INICIO PARA BUSCA -->
+	<div id="busca" style="position:absolute; width:168px; height:100px; z-index:1; left: 663px; top: 66px; visibility: hidden"> 
+	  <div align="center"> </div>
+	    
+	  <div align="center"> 
+	    <table width="166" height="80" border="0" cellpadding="0" cellspacing="0">
+	      <tr> 
+	        <td width="15" height="32"><img src="../asp/xpep/img/_0.gif" width="15" height="32" border="0"  onMouseOver="MM_showHideLayers('busca','','hide')"></td>
+	        <td width="136" height="15" valign="top" background="img/000017_3.gif">
+				<table width="136" height="30" border="0" cellpadding="0" cellspacing="0">
+				  <tr> 
+				    <td width="136" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/param_Curso.asp?Emp=PB" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Curso</font></b></a></td>
+				  </tr>
+				  <tr> 
+				    <td width="136" height="2"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+				  </tr>
+				  <tr> 
+				    <td width="136" height="15"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="bpp/index.htm" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">BPP</font></b></a></td>
+				  </tr>
+				  <tr> 
+				    <td width="136" height="2"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+				  </tr>
+				  <tr> 
+				    <td width="136" height="22"><img src="../asp/xpep/img/_0.gif" width="10" height="1"><a href="aspscript/param_passo_passo.asp" class="pers"><b><font size="1" face="Verdana, Arial, Helvetica, sans-serif">Passo a Passo</font></b></a></td>
+				  </tr>
+				</table> 
+	        </td>
+	        <td width="15" height="32" valign="top"><img src="../asp/xpep/img/_0.gif" width="14" height="20" border="0"  onMouseOver="MM_showHideLayers('busca','','hide')"></td>
+	      </tr>
+	      <tr valign="top"> 
+	        <td height="40" colspan="3"><img src="../asp/xpep/img/_0.gif" width="164" height="38" border="0"  onMouseOver="MM_showHideLayers('busca','','hide')"></td>
+	      </tr>
+	    </table>
+	    <p>&nbsp;</p>
+	  </div>
+	</div>
+	<!-- FIM BUSCA -->
+
+	<!-- CHAMADA PARA O SITE DO BW -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td><table width="780" height="44" border="0" cellpadding="0" cellspacing="0">
+	        <tr>
+	          <td width="583" height="44"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	          <td width="197" height="44"><img src="../imagens/000043.gif" width="95" height="44"></td>
+	        </tr>
+	      </table></td>
+	  </tr>
+	</table>
+
+	<!-- MONTA O PRIMEIRO MENU -->
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td bgcolor="#6699CC">
+			<table width="780" border="0" cellspacing="0" cellpadding="0">
+			  <tr>
+			    <td width="154" height="21"><img src="../asp/xpep/img/000002.gif" width="154" height="21"></td>
+			    <td width="19" height="21"><img src="../asp/xpep/img/000003.gif" width="19" height="21"></td>
+			    <td width="607" height="21">
+					<font color="#FFFFFF" size="1" face="Verdana, Arial, Helvetica, sans-serif">
+						<strong>
+						</strong>
+					</font>
+			    </td>
+			  </tr>
+			</table>
+	    </td>
+	  </tr>
+	</table>
+
+
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td width="1" height="1" bgcolor="#003366"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	  </tr>
+	</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td height="5"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	  </tr>
+	</table>
+	<table width="780" height="59" border="0" cellpadding="0" cellspacing="0">
+	  <tr>
+	    <td width="20"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	    <td width="740" height="39" background="img/000006.gif">
+	    <table width="740" height="39" border="0" cellpadding="0" cellspacing="0">
+	        <tr>
+				
+          <td width="740" height="39" align="center" background="../asp/xpep/img/000006.gif"><font color="#666666" size="3" face="Verdana, Arial, Helvetica, sans-serif"><b>PLANO 
+            DE ENTRADA EM PRODU&Ccedil;&Atilde;O</b></FONT></td>
+			</tr>	       
+	      </table></td>
+	    <td width="20" height="39"><img src="../asp/xpep/img/_0.gif" width="1" height="1"></td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	    <td><div align="right"><span class="style3"><%=Session("CdUsuario") & "-" &  Session("NomeUsuario")%></span></div></td>
+	    <td>&nbsp;</td>
+      </tr>
+	</table>
+    <!-- TemplateBeginEditable name="corpo" -->coarpo<!-- TemplateEndEditable -->
+    <table width="200" border="0" align="center">
+<tr>	
+	<td height="10" width="780"></td>
+</tr>
+<tr>
+	<td width="780">			
+		<p width="780" align="center"><img src="../img/000025.gif" width="467" height="1"></p>
+		<p align="center"><font color="#666666" size="1" face="Verdana, Arial, Helvetica, sans-serif">© 2003 Sinergia | A Petrobras integrada rumo ao futuro</font></p>
+	</td>
+</tr></table>
+</body>
+</html>

@@ -1,0 +1,18 @@
+	var a = document.URL;
+	var n=0;
+
+	for (var i = 1 ; i < 1000; i++)
+	{
+	var final=a.slice(0,i)
+	var t=a.slice(i-1,i);
+	if (t=='/')
+	{
+	n = n + 1;
+	}
+	if(n == 4)
+	{
+	i = 1000;
+	}
+	}
+	var tam=final.length;
+	var caminho = final.slice(0,tam-1);

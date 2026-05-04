@@ -1,0 +1,805 @@
+<<<<<<< HEAD
+BODY
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	margin : 0px;
+	background-color: #FFFFFF;	
+}
+
+TABLE
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	margin : 0px;
+}
+
+
+/*----------------
+  Links
+-----------------*/
+
+A:link
+{
+	color: #0000FF;
+	text-decoration : none;	
+}
+A:visited
+{
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A:hover
+{
+	text-decoration : underline;
+}
+
+A.tituloChamada
+{
+	font : 12px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #0000FF;
+	text-decoration : none;	
+	font-weight : bold;
+
+}
+
+A.tituloChamada:hover
+{
+	text-decoration : underline;
+}
+
+A.textoChamada
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #990033;
+	text-decoration : none;	
+}
+
+A.textoChamada:hover
+{
+	text-decoration : underline;
+}
+
+A.textoChamada:visited
+{
+	color: #990033;
+	
+}
+
+A.barra
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A.barra:hover
+{
+	text-decoration : underline;
+}
+
+A.acao
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A.acao:hover
+{
+	text-decoration : underline;
+}
+
+A.itemMenu
+{
+	text-decoration : none;
+	padding: 0px;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+A.tituloTemplate {
+	text-decoration: underline;	
+}
+
+A.link
+{
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A.link:hover
+{
+	text-decoration : underline;
+}
+
+/*----------------
+  Formulários
+-----------------*/
+
+INPUT, SELECT, TEXTAREA
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	border: 1px solid #0000FF;
+	vertical-align: baseline;
+	padding : 1px 0px 0px 2px;
+}
+
+.radio
+{
+	border-width : 0px;
+	vertical-align: middle;
+}
+
+.checkbox
+{
+	border-width : 0px;
+	vertical-align: middle;
+}
+
+ .botao
+{
+	border-width : 1px solid;
+	border-color : #476079;
+  /*  color: #476079;*/
+  
+  /*background-color: #B7D0E9;*/
+}
+
+.nomeCampo
+{
+	text-align: right;
+	vertical-align: top;
+	font-weight : bold;
+  color: #0000FF;
+	/*color: #7790A9;*/
+	width: 30%; 
+}
+
+.valorCampo
+{
+	color: #231929;
+	vertical-align: baseline;	
+ /* width: 300px;*/
+}
+
+.tabelaPrincipal
+{
+  width: 100%;
+  border: 1px solid #0000FF;
+  /*margin: 10px 10px 10px 10px;*/  
+}
+
+.tabelaPrincipal .nomeCampo
+{
+  padding: 6px;
+}
+
+.tabelaPrincipal .valorCampo
+{
+  padding: 6px;
+}
+
+.tabelaPrincipal td
+{
+  padding: 3px;
+}
+
+.acao
+{
+  text-align: center;
+}
+
+.tabelaMensagem
+{
+  width: 100%;
+  border: 1px solid #CCCCCC;	
+  /*margin-left: 30px;  */
+}
+
+.linhadestaque
+{
+	background-color: #FCF1E0; /*#DBE0E8; /*f5f0ed*/
+}
+
+.linhadestaque2
+{
+	background-color: #EBF0FF; /*#DBE0F8; /*f5f0ed*/
+}
+
+.linhadestaque3
+{
+	background-color: #FFCCC4; /*#DBE0F8; /*f5f0ed*/
+}
+
+/*----------------
+  Títulos
+-----------------*/
+
+.rewind {
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #7790A9;
+	text-decoration : none;	
+	
+}
+
+.titulo
+{
+	font-size: 18px;
+	font-weight: bold;
+	color: #0000FF;
+}
+
+.subtitulo
+{
+	font-size : 13px;
+	font-weight : bold;
+	color: #0000FF;
+}
+
+.tituloCategoria {
+	font-size: 14px;
+	font-weight: bold;
+	color: #0000FF;
+}
+
+.itemMenu
+{
+	text-align: right;
+	/*background-color: #8194AD;*/
+	padding: 8px 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.mensagemErro
+{
+	color: #C50023;
+	background-color: #F0F0F0;
+	padding : 2px 2px 2px 2px;	
+}
+
+.mensagemSucesso
+{
+	color: #006600;
+	background-color: #F0F0F0;
+	padding : 2px 2px 2px 2px;
+}
+
+.aviso
+{
+	font-weight : bold;
+	color: #DC143C;
+}
+
+.wildcard
+{
+	font-size: 11px;
+	font-weight : bold;
+	color: #FFFFFF;
+	padding: 2px;
+}
+
+.cabecalhoItem
+{
+	font-size : 11px;
+	font-weight : bold;
+	color: #FFFF00;
+	background-color: #0000FF;
+}
+
+.cabecalhoValor
+{
+	font-size : 13px;
+	font-weight : bold;
+	color: #7790A9;
+}
+
+
+/*----------------
+  MENU
+-----------------*/
+.tituloMenu
+{
+    font-size : 13px;
+	font-weight : bold;
+	color: #FFFF00;
+}
+
+/*----------------
+  CHAMADAS
+-----------------*/
+.tituloChamada
+{
+  font-size : 12px;
+	font-weight : bold;
+	color: #0000FF;
+  border-left: 1px solid #0000FF;
+  border-top: 1px solid #0000FF;
+}
+
+.textoChamada
+{
+  font-size : 11px;
+	color: #0000FF;
+  font-weight : normal;
+}
+
+.tituloBusca
+{
+  font-size : 12px;
+	font-weight : bold;
+	color: #0000FF;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+.itemBusca
+{
+	font-size : 11px;
+	font-weight : bold;
+	color: #5080FF;
+	padding-bottom : 0px;
+	padding-left : 0px;
+	padding-right : 0px;
+	padding-top : 0px;
+}
+
+.itemBusca a
+{
+	color: #5080FF;
+}
+
+.itemBusca a:visited
+{
+	color: #5080FF;
+}
+
+.cabecalhoBusca {
+	font-size : 8pt;
+	color: white;
+	vertical-align: baseline;
+	background-color: #0000FF;
+	padding-left: 4px;
+	padding-right: 4px;	
+}
+
+.tituloTemplate
+{
+	font-size : 12px;
+
+	color: #000000;
+	padding-bottom : 0px;
+	padding-left : 0px;
+	padding-right : 0px;
+	padding-top : 0px;
+}
+
+
+/*--------------------
+CONTEUDO
+---------------------*/
+.tituloConteudo {
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;	
+}
+
+.subTituloConteudo {
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;	
+}
+
+.textoConteudo {
+	font-size: 12px;
+	color: #000000;
+}
+
+.nomeCampoAviso {
+	font-size: 10px;	
+}
+
+=======
+BODY
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	margin : 0px;
+	background-color: #FFFFFF;	
+}
+
+TABLE
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	margin : 0px;
+}
+
+
+/*----------------
+  Links
+-----------------*/
+
+A:link
+{
+	color: #0000FF;
+	text-decoration : none;	
+}
+A:visited
+{
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A:hover
+{
+	text-decoration : underline;
+}
+
+A.tituloChamada
+{
+	font : 12px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #0000FF;
+	text-decoration : none;	
+	font-weight : bold;
+
+}
+
+A.tituloChamada:hover
+{
+	text-decoration : underline;
+}
+
+A.textoChamada
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #990033;
+	text-decoration : none;	
+}
+
+A.textoChamada:hover
+{
+	text-decoration : underline;
+}
+
+A.textoChamada:visited
+{
+	color: #990033;
+	
+}
+
+A.barra
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A.barra:hover
+{
+	text-decoration : underline;
+}
+
+A.acao
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A.acao:hover
+{
+	text-decoration : underline;
+}
+
+A.itemMenu
+{
+	text-decoration : none;
+	padding: 0px;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+A.tituloTemplate {
+	text-decoration: underline;	
+}
+
+A.link
+{
+	color: #0000FF;
+	text-decoration : none;	
+}
+
+A.link:hover
+{
+	text-decoration : underline;
+}
+
+/*----------------
+  Formulários
+-----------------*/
+
+INPUT, SELECT, TEXTAREA
+{
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	border: 1px solid #0000FF;
+	vertical-align: baseline;
+	padding : 1px 0px 0px 2px;
+}
+
+.radio
+{
+	border-width : 0px;
+	vertical-align: middle;
+}
+
+.checkbox
+{
+	border-width : 0px;
+	vertical-align: middle;
+}
+
+ .botao
+{
+	border-width : 1px solid;
+	border-color : #476079;
+  /*  color: #476079;*/
+  
+  /*background-color: #B7D0E9;*/
+}
+
+.nomeCampo
+{
+	text-align: right;
+	vertical-align: top;
+	font-weight : bold;
+  color: #0000FF;
+	/*color: #7790A9;*/
+	width: 30%; 
+}
+
+.valorCampo
+{
+	color: #231929;
+	vertical-align: baseline;	
+ /* width: 300px;*/
+}
+
+.tabelaPrincipal
+{
+  width: 100%;
+  border: 1px solid #0000FF;
+  /*margin: 10px 10px 10px 10px;*/  
+}
+
+.tabelaPrincipal .nomeCampo
+{
+  padding: 6px;
+}
+
+.tabelaPrincipal .valorCampo
+{
+  padding: 6px;
+}
+
+.tabelaPrincipal td
+{
+  padding: 3px;
+}
+
+.acao
+{
+  text-align: center;
+}
+
+.tabelaMensagem
+{
+  width: 100%;
+  border: 1px solid #CCCCCC;	
+  /*margin-left: 30px;  */
+}
+
+.linhadestaque
+{
+	background-color: #FCF1E0; /*#DBE0E8; /*f5f0ed*/
+}
+
+.linhadestaque2
+{
+	background-color: #EBF0FF; /*#DBE0F8; /*f5f0ed*/
+}
+
+.linhadestaque3
+{
+	background-color: #FFCCC4; /*#DBE0F8; /*f5f0ed*/
+}
+
+/*----------------
+  Títulos
+-----------------*/
+
+.rewind {
+	font : 11px Tahoma, Verdana, Arial, Helvetica, sans-serif;
+	color: #7790A9;
+	text-decoration : none;	
+	
+}
+
+.titulo
+{
+	font-size: 18px;
+	font-weight: bold;
+	color: #0000FF;
+}
+
+.subtitulo
+{
+	font-size : 13px;
+	font-weight : bold;
+	color: #0000FF;
+}
+
+.tituloCategoria {
+	font-size: 14px;
+	font-weight: bold;
+	color: #0000FF;
+}
+
+.itemMenu
+{
+	text-align: right;
+	/*background-color: #8194AD;*/
+	padding: 8px 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.mensagemErro
+{
+	color: #C50023;
+	background-color: #F0F0F0;
+	padding : 2px 2px 2px 2px;	
+}
+
+.mensagemSucesso
+{
+	color: #006600;
+	background-color: #F0F0F0;
+	padding : 2px 2px 2px 2px;
+}
+
+.aviso
+{
+	font-weight : bold;
+	color: #DC143C;
+}
+
+.wildcard
+{
+	font-size: 11px;
+	font-weight : bold;
+	color: #FFFFFF;
+	padding: 2px;
+}
+
+.cabecalhoItem
+{
+	font-size : 11px;
+	font-weight : bold;
+	color: #FFFF00;
+	background-color: #0000FF;
+}
+
+.cabecalhoValor
+{
+	font-size : 13px;
+	font-weight : bold;
+	color: #7790A9;
+}
+
+
+/*----------------
+  MENU
+-----------------*/
+.tituloMenu
+{
+    font-size : 13px;
+	font-weight : bold;
+	color: #FFFF00;
+}
+
+/*----------------
+  CHAMADAS
+-----------------*/
+.tituloChamada
+{
+  font-size : 12px;
+	font-weight : bold;
+	color: #0000FF;
+  border-left: 1px solid #0000FF;
+  border-top: 1px solid #0000FF;
+}
+
+.textoChamada
+{
+  font-size : 11px;
+	color: #0000FF;
+  font-weight : normal;
+}
+
+.tituloBusca
+{
+  font-size : 12px;
+	font-weight : bold;
+	color: #0000FF;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+.itemBusca
+{
+	font-size : 11px;
+	font-weight : bold;
+	color: #5080FF;
+	padding-bottom : 0px;
+	padding-left : 0px;
+	padding-right : 0px;
+	padding-top : 0px;
+}
+
+.itemBusca a
+{
+	color: #5080FF;
+}
+
+.itemBusca a:visited
+{
+	color: #5080FF;
+}
+
+.cabecalhoBusca {
+	font-size : 8pt;
+	color: white;
+	vertical-align: baseline;
+	background-color: #0000FF;
+	padding-left: 4px;
+	padding-right: 4px;	
+}
+
+.tituloTemplate
+{
+	font-size : 12px;
+
+	color: #000000;
+	padding-bottom : 0px;
+	padding-left : 0px;
+	padding-right : 0px;
+	padding-top : 0px;
+}
+
+
+/*--------------------
+CONTEUDO
+---------------------*/
+.tituloConteudo {
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;	
+}
+
+.subTituloConteudo {
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;	
+}
+
+.textoConteudo {
+	font-size: 12px;
+	color: #000000;
+}
+
+.nomeCampoAviso {
+	font-size: 10px;	
+}
+
+>>>>>>> 20204f36c6b9c077038ee81cbf1ea817475c484e

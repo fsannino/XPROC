@@ -1,0 +1,20 @@
+vti_encoding:SR|utf8-nl
+vti_timelastmodified:TR|16 Jul 2003 11:42:26 -0000
+vti_extenderversion:SR|5.0.2.4330
+vti_author:SR|CORP\\xd47
+vti_modifiedby:SR|CORP\\xd47
+vti_timecreated:TR|16 Jul 2003 11:42:26 -0000
+vti_cacheddtm:TX|16 Jul 2003 11:42:26 -0000
+vti_filesize:IR|14888
+vti_cachedtitle:SR|SINERGIA # XPROC # Processos de Negócio
+vti_cachedbodystyle:SR|<body topmargin="0" leftmargin="0" bgcolor="#FFFFFF">
+vti_cachedlinkinfo:VX|S|js/troca_lista.js A|../Curso/valida_cad_curso.asp H|JavaScript:history.back() S|../Funcao/voltar.gif H|JavaScript:history.forward() S|../Funcao/avancar.gif H|JavaScript:window.external.AddFavorite('http://S6000WS12.corp.petrobras.biz/sinergia_total/index.htm','Sinergia\\ \\ -\\ X-Total') S|../Funcao/favoritos.gif H|javascript:print() S|../Funcao/imprimir.gif H|JavaScript:history.go() S|../Funcao/atualizar.gif H|../../indexA.asp S|../Funcao/home.gif
+vti_cachedsvcrellinks:VX|NSUS|asp/MacroPerfil/js/troca_lista.js FAUS|asp/Curso/valida_cad_curso.asp SHUS|JavaScript:history.back() FSUS|asp/Funcao/voltar.gif SHUS|JavaScript:history.forward() FSUS|asp/Funcao/avancar.gif SHUS|JavaScript:window.external.AddFavorite('http://S6000WS12.corp.petrobras.biz/sinergia_total/index.htm','Sinergia\\ \\ -\\ X-Total') FSUS|asp/Funcao/favoritos.gif SHUS|javascript:print() FSUS|asp/Funcao/imprimir.gif SHUS|JavaScript:history.go() FSUS|asp/Funcao/atualizar.gif FHUS|indexA.asp FSUS|asp/Funcao/home.gif
+vti_cachedneedsrewrite:BR|false
+vti_cachedhasbots:BR|false
+vti_cachedhastheme:BR|false
+vti_cachedhasborder:BR|false
+vti_charset:SR|windows-1252
+vti_title:SR|SINERGIA # XPROC # Processos de Negócio
+vti_lineageid:SR|{27B776AC-6C6F-4FB1-8801-F2A784BE988F}
+vti_backlinkinfo:VX|

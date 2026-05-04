@@ -1,0 +1,68 @@
+<<<<<<< HEAD
+<SCRIPT LANGUAGE=VBScript RUNAT=Server>
+Sub Application_OnStart
+    Application("datainicial") = now
+    Application("visits") 
+	Application("Active") = 0
+end sub
+
+Sub Application_OnEnd
+end sub
+
+Sub Session_OnStart
+	Session("MegaProcesso") = 0
+	Session.Timeout = 30
+	Session("Start") = Now
+	Application.Lock
+		Application("visits") = Application("visits") + 1
+		intTotal_visitors = Application("visits")
+	Application.Unlock
+	Session("VisitorID") = intTotal_visitors
+	
+	Application.Lock
+		Application("Active") = Application("Active") + 1
+	Application.Unlock
+end sub
+
+Sub Session_OnEnd
+    Session("MegaProcesso") = 0
+    Application.Lock
+		Application("Active") = Application("Active") - 1
+	Application.Unlock
+end sub
+
+=======
+<SCRIPT LANGUAGE=VBScript RUNAT=Server>
+Sub Application_OnStart
+    Application("datainicial") = now
+    Application("visits") 
+	Application("Active") = 0
+end sub
+
+Sub Application_OnEnd
+end sub
+
+Sub Session_OnStart
+	Session("MegaProcesso") = 0
+	Session.Timeout = 30
+	Session("Start") = Now
+	Application.Lock
+		Application("visits") = Application("visits") + 1
+		intTotal_visitors = Application("visits")
+	Application.Unlock
+	Session("VisitorID") = intTotal_visitors
+	
+	Application.Lock
+		Application("Active") = Application("Active") + 1
+	Application.Unlock
+end sub
+
+Sub Session_OnEnd
+    Session("MegaProcesso") = 0
+    Application.Lock
+		Application("Active") = Application("Active") - 1
+	Application.Unlock
+end sub
+
+>>>>>>> 20204f36c6b9c077038ee81cbf1ea817475c484e
+</SCRIPT>

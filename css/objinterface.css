@@ -1,0 +1,178 @@
+<<<<<<< HEAD
+<style type="text/css">
+.listbox01 {font-family: 'Verdana'; font-size: 7.5pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;}
+.listbox02 {font-family: 'Verdana'; font-size: 8pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;}
+.combobox01{
+	font-family: 'Verdana';
+	font-size: 7.5pt;
+	color: #000000;
+	background-color: #FFFFFF;
+	border: 1px solid #000000;
+	width: 300px;
+}
+.combobox02{font-family: 'Verdana'; font-size: 7.5pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;width: 740px;}
+.combobox03{font-family: 'Verdana'; font-size: 7.5pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;width: 380px;}
+.caixalabel01{font-family: 'Verdana'; font-size: 8pt; color: #483d8b; background-color: #FFFFFF; border: 1px solid #000000;}
+.label02{font-family: 'Verdana'; font-size: 8pt; color: #483d8b; background-color: #FFFFFF; border: 0px ; alignment: center;}
+.button01{font-family: 'Verdana'; font-size: 8pt; color: #000000; background-color: #FDE19A;}
+.letraGerg2Cinza {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 2pt;
+	color: #666666;
+}
+.cmdOnda {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 200px; 
+}	
+.cmdPlano {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 400px;
+}
+.cmdTask {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 700px;
+}
+.listResponsavel {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	width: 350px;
+}
+.cmb200 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	width: 350px;
+}
+.txtCampo {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+}
+.cmd150 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 150px;
+}
+
+.body 
+{
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+
+.link:hover
+{	    
+    font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt; 
+	font-weight: normal; 
+	color: #333333;  
+	text-decoration: underline
+}
+
+.link
+{   
+    font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt; 
+	font-weight: normal; 
+	color: #333333; 
+	text-decoration: underline
+}
+
+.style8 
+{
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+=======
+<style type="text/css">
+.listbox01 {font-family: 'Verdana'; font-size: 7.5pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;}
+.listbox02 {font-family: 'Verdana'; font-size: 8pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;}
+.combobox01{
+	font-family: 'Verdana';
+	font-size: 7.5pt;
+	color: #000000;
+	background-color: #FFFFFF;
+	border: 1px solid #000000;
+	width: 300px;
+}
+.combobox02{font-family: 'Verdana'; font-size: 7.5pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;width: 740px;}
+.combobox03{font-family: 'Verdana'; font-size: 7.5pt; color: #000000; background-color: #FFFFFF; border: 1px solid #000000;width: 380px;}
+.caixalabel01{font-family: 'Verdana'; font-size: 8pt; color: #483d8b; background-color: #FFFFFF; border: 1px solid #000000;}
+.label02{font-family: 'Verdana'; font-size: 8pt; color: #483d8b; background-color: #FFFFFF; border: 0px ; alignment: center;}
+.button01{font-family: 'Verdana'; font-size: 8pt; color: #000000; background-color: #FDE19A;}
+.letraGerg2Cinza {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 2pt;
+	color: #666666;
+}
+.cmdOnda {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 200px; 
+}	
+.cmdPlano {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 400px;
+}
+.cmdTask {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 700px;
+}
+.listResponsavel {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	width: 350px;
+}
+.cmb200 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	width: 350px;
+}
+.txtCampo {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+}
+.cmd150 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	width: 150px;
+}
+
+.body 
+{
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+
+.link:hover
+{	    
+    font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt; 
+	font-weight: normal; 
+	color: #333333;  
+	text-decoration: underline
+}
+
+.link
+{   
+    font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 8pt; 
+	font-weight: normal; 
+	color: #333333; 
+	text-decoration: underline
+}
+
+.style8 
+{
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+>>>>>>> 20204f36c6b9c077038ee81cbf1ea817475c484e
+</style>

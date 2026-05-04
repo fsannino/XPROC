@@ -1,0 +1,5 @@
+arquivo.txt
+*.zip
+*.log
+*.bak
+node_modules/
