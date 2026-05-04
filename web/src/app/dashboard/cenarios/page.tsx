@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { excluirCenario } from '@/actions/cenarios'
 import NovoCenarioForm from './form'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 export default async function CenariosPage() {
   const cenarios = await prisma.cenario.findMany({
@@ -41,11 +42,7 @@ export default async function CenariosPage() {
                   <td className="px-4 py-3 text-gray-500">{c.situacao || '—'}</td>
                   <td className="px-4 py-3 text-center text-gray-600">{c._count.transacoes}</td>
                   <td className="px-4 py-3 text-right">
-                    <form action={excluirCenario.bind(null, c.id)} className="inline">
-                      <button type="submit" className="text-red-600 hover:text-red-800 text-xs font-medium">
-                        Excluir
-                      </button>
-                    </form>
+                    <DeleteButton action={excluirCenario.bind(null, c.id)} confirmText={`Excluir cenário "${c.descricao}"?`} />
                   </td>
                 </tr>
               ))}

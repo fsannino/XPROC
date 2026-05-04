@@ -1,9 +1,13 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { excluirMegaProcesso } from '@/actions/processos'
+import { DeleteButton } from '@/components/ui/delete-button'
+import { SearchInput } from '@/components/ui/search'
 
-export default async function ProcessosPage() {
+export default async function ProcessosPage({ searchParams }: { searchParams: Promise<{ busca?: string }> }) {
+  const { busca } = await searchParams
   const megaProcessos = await prisma.megaProcesso.findMany({
+    where: busca ? { descricao: { contains: busca, mode: 'insensitive' } } : undefined,
     orderBy: { id: 'asc' },
     include: {
       _count: { select: { processos: true, acessos: true } },
@@ -14,12 +18,15 @@ export default async function ProcessosPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Processos</h1>
-        <Link
-          href="/dashboard/processos/novo"
-          className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors"
-        >
-          + Novo Mega-Processo
-        </Link>
+        <div className="flex items-center gap-3">
+          <SearchInput placeholder="Buscar mega-processo..." />
+          <Link
+            href="/dashboard/processos/novo"
+            className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors"
+          >
+            + Novo Mega-Processo
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -60,27 +67,17 @@ export default async function ProcessosPage() {
                 <td className="px-4 py-3 text-right space-x-2">
                   <Link
                     href={`/dashboard/processos/${mp.id}`}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm"
                   >
                     Ver
                   </Link>
                   <Link
                     href={`/dashboard/processos/${mp.id}/editar`}
-                    className="text-amber-600 hover:text-amber-800 font-medium"
+                    className="text-amber-600 hover:text-amber-800 font-medium text-sm"
                   >
                     Editar
                   </Link>
-                  <form
-                    action={excluirMegaProcesso.bind(null, mp.id)}
-                    className="inline"
-                    onSubmit={(e) => {
-                      if (!confirm('Confirmar exclusão?')) e.preventDefault()
-                    }}
-                  >
-                    <button type="submit" className="text-red-600 hover:text-red-800 font-medium">
-                      Excluir
-                    </button>
-                  </form>
+                  <DeleteButton action={excluirMegaProcesso.bind(null, mp.id)} confirmText={`Excluir "${mp.descricao}"?`} />
                 </td>
               </tr>
             ))}

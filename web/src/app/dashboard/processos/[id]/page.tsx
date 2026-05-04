@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { excluirProcesso, excluirSubProcesso } from '@/actions/processos'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 export default async function MegaProcessoDetalhe({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -83,11 +84,7 @@ export default async function MegaProcessoDetalhe({ params }: { params: Promise<
                 <span className="text-xs font-mono bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">{proc.sequencia ?? '—'}</span>
                 <span className="font-semibold text-gray-800">{proc.descricao}</span>
               </div>
-              <form action={excluirProcesso.bind(null, proc.id)} className="inline">
-                <button type="submit" className="text-xs text-red-500 hover:text-red-700">
-                  Excluir
-                </button>
-              </form>
+              <DeleteButton action={excluirProcesso.bind(null, proc.id)} confirmText={`Excluir processo "${proc.descricao}"?`} />
             </div>
 
             <div className="divide-y divide-gray-50">
@@ -107,11 +104,7 @@ export default async function MegaProcessoDetalhe({ params }: { params: Promise<
                         </span>
                       )}
                     </div>
-                    <form action={excluirSubProcesso.bind(null, sub.id)} className="inline">
-                      <button type="submit" className="text-xs text-red-500 hover:text-red-700">
-                        Excluir
-                      </button>
-                    </form>
+                    <DeleteButton action={excluirSubProcesso.bind(null, sub.id)} confirmText={`Excluir sub-processo "${sub.descricao}"?`} />
                   </div>
 
                   {sub.atividades.length > 0 && (

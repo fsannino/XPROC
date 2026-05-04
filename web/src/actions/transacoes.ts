@@ -36,13 +36,6 @@ export async function criarEmpresa(_state: unknown, formData: FormData) {
   return { success: true }
 }
 
-export async function adicionarEmpresa(formData: FormData) {
-  const nome = formData.get('nome') as string
-  if (!nome?.trim()) return
-  await prisma.empresaUnidade.create({ data: { nome: nome.trim() } })
-  revalidatePath('/dashboard/empresas')
-}
-
 export async function excluirEmpresa(id: number) {
   await prisma.empresaUnidade.delete({ where: { id } })
   revalidatePath('/dashboard/empresas')

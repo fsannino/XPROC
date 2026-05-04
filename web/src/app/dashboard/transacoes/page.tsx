@@ -1,24 +1,33 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { excluirTransacao } from '@/actions/transacoes'
+import { DeleteButton } from '@/components/ui/delete-button'
+import { SearchInput } from '@/components/ui/search'
 
-export default async function TransacoesPage() {
+export default async function TransacoesPage({ searchParams }: { searchParams: Promise<{ busca?: string }> }) {
+  const { busca } = await searchParams
   const transacoes = await prisma.transacao.findMany({
+    where: busca
+      ? { OR: [{ id: { contains: busca, mode: 'insensitive' } }, { descricao: { contains: busca, mode: 'insensitive' } }] }
+      : undefined,
     orderBy: { id: 'asc' },
     include: { _count: { select: { megaProcessos: true } } },
-    take: 100,
+    take: 200,
   })
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Transações</h1>
-        <Link
-          href="/dashboard/transacoes/nova"
-          className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800"
-        >
-          + Nova Transação
-        </Link>
+        <div className="flex items-center gap-3">
+          <SearchInput placeholder="Buscar transação..." />
+          <Link
+            href="/dashboard/transacoes/nova"
+            className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800"
+          >
+            + Nova Transação
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -45,11 +54,7 @@ export default async function TransacoesPage() {
                 <td className="px-4 py-3 text-gray-800">{t.descricao || '—'}</td>
                 <td className="px-4 py-3 text-center text-gray-600">{t._count.megaProcessos}</td>
                 <td className="px-4 py-3 text-right">
-                  <form action={excluirTransacao.bind(null, t.id)} className="inline">
-                    <button type="submit" className="text-red-600 hover:text-red-800 font-medium text-xs">
-                      Excluir
-                    </button>
-                  </form>
+                  <DeleteButton action={excluirTransacao.bind(null, t.id)} confirmText={`Excluir transação "${t.id}"?`} />
                 </td>
               </tr>
             ))}
