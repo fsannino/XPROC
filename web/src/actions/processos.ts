@@ -80,6 +80,29 @@ export async function excluirProcesso(id: number) {
   revalidatePath('/dashboard/processos')
 }
 
+export async function atualizarProcesso(id: number, megaProcessoId: number, _state: unknown, formData: FormData) {
+  const validated = ProcessoSchema.safeParse({
+    megaProcessoId,
+    descricao: formData.get('descricao'),
+    sequencia: formData.get('sequencia') ? Number(formData.get('sequencia')) : undefined,
+    tempoMedioCiclo: formData.get('tempoMedioCiclo') ? Number(formData.get('tempoMedioCiclo')) : undefined,
+    custoEstimado: formData.get('custoEstimado') ? Number(formData.get('custoEstimado')) : undefined,
+    volumeMensal: formData.get('volumeMensal') ? Number(formData.get('volumeMensal')) : undefined,
+  })
+
+  if (!validated.success) {
+    return { errors: validated.error.flatten().fieldErrors }
+  }
+
+  const { megaProcessoId: _, ...data } = validated.data
+  await prisma.processo.update({
+    where: { id },
+    data,
+  })
+  revalidatePath(`/dashboard/processos/${megaProcessoId}`)
+  return { success: true }
+}
+
 // ─── Sub-Processo ─────────────────────────────────────────────────
 
 export async function criarSubProcesso(_state: unknown, formData: FormData) {
