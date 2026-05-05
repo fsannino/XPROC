@@ -47,6 +47,40 @@ export default function AdicionarProcessoPage() {
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tempo médio (dias)</label>
+              <input
+                name="tempoMedioCiclo"
+                type="number"
+                min={0}
+                step="0.1"
+                placeholder="ex: 2.5"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Custo estimado (R$)</label>
+              <input
+                name="custoEstimado"
+                type="number"
+                min={0}
+                step="0.01"
+                placeholder="ex: 1500.00"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Volume mensal</label>
+              <input
+                name="volumeMensal"
+                type="number"
+                min={1}
+                placeholder="ex: 200"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
           <button
             type="submit"
             disabled={pendingProcesso}

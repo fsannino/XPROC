@@ -57,6 +57,7 @@ export default async function MegaProcessoDetalhe({ params }: { params: Promise<
   if (!megaProcesso) notFound()
 
   const proximos = proximosStatus(megaProcesso.status)
+  const podeAlterar = session?.categoria === 'A' || megaProcesso.responsavelId === session?.userId
 
   const labelMap: Record<string, string> = {
     A: 'Alta', M: 'Média', B: 'Baixa',
@@ -82,11 +83,15 @@ export default async function MegaProcessoDetalhe({ params }: { params: Promise<
             ) : (
               <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Ativo</span>
             )}
-            <StatusSelector
-              megaProcessoId={megaProcesso.id}
-              statusAtual={megaProcesso.status}
-              proximosStatus={proximos}
-            />
+            {podeAlterar ? (
+              <StatusSelector
+                megaProcessoId={megaProcesso.id}
+                statusAtual={megaProcesso.status}
+                proximosStatus={proximos}
+              />
+            ) : (
+              <StatusBadge status={megaProcesso.status} />
+            )}
             {megaProcesso.responsavel && (
               <span className="text-xs text-gray-500">
                 Owner: <span className="font-medium text-gray-700">{megaProcesso.responsavel.nome}</span>
