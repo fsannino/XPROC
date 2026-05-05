@@ -150,7 +150,15 @@ export default async function MegaProcessoDetalhe({ params }: { params: Promise<
                   </span>
                 )}
               </div>
-              <DeleteButton action={excluirProcesso.bind(null, proc.id)} confirmText={`Excluir processo "${proc.descricao}"?`} />
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/dashboard/processos/${megaProcesso.id}/processos/${proc.id}/editar`}
+                  className="text-xs text-amber-600 hover:text-amber-800 font-medium"
+                >
+                  Editar
+                </Link>
+                <DeleteButton action={excluirProcesso.bind(null, proc.id)} confirmText={`Excluir processo "${proc.descricao}"?`} />
+              </div>
             </div>
 
             <div className="divide-y divide-gray-50">
