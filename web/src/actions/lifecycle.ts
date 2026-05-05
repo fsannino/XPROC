@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/session'
 import { AlterarStatusSchema, ComentarioSchema } from '@/lib/definitions'
 import { enviarEmail, htmlMudancaStatus } from '@/lib/email'
+import { STATUS_TRANSITIONS } from '@/lib/lifecycle-utils'
 
 // ─── Status ───────────────────────────────────────────────────────
 
@@ -20,6 +21,15 @@ export async function alterarStatus(megaProcessoId: number, novoStatus: string) 
     include: { responsavel: { select: { email: true, nome: true } } },
   })
   if (!mp) return { error: 'Mega-processo não encontrado.' }
+
+  const isAdmin = session.categoria === 'A'
+  const isOwner = mp.responsavelId === session.userId
+  if (!isAdmin && !isOwner) return { error: 'Sem permissão para alterar status.' }
+
+  const allowed = STATUS_TRANSITIONS[mp.status] ?? []
+  if (!allowed.includes(novoStatus)) {
+    return { error: `Transição de "${mp.status}" para "${novoStatus}" não é permitida.` }
+  }
 
   const statusAnterior = mp.status
 

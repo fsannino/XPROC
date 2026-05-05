@@ -61,6 +61,9 @@ export async function criarProcesso(_state: unknown, formData: FormData) {
     megaProcessoId: Number(formData.get('megaProcessoId')),
     descricao: formData.get('descricao'),
     sequencia: formData.get('sequencia') ? Number(formData.get('sequencia')) : undefined,
+    tempoMedioCiclo: formData.get('tempoMedioCiclo') ? Number(formData.get('tempoMedioCiclo')) : undefined,
+    custoEstimado: formData.get('custoEstimado') ? Number(formData.get('custoEstimado')) : undefined,
+    volumeMensal: formData.get('volumeMensal') ? Number(formData.get('volumeMensal')) : undefined,
   })
 
   if (!validated.success) {
