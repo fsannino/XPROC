@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
-import { Pool } from "@neondatabase/serverless";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
