@@ -28,7 +28,12 @@ export async function login(
 
   const { codigo, senha } = validated.data
 
-  const usuario = await prisma.usuario.findUnique({ where: { codigo } })
+  let usuario: Awaited<ReturnType<typeof prisma.usuario.findUnique>>
+  try {
+    usuario = await prisma.usuario.findUnique({ where: { codigo } })
+  } catch {
+    return { error: 'Erro ao conectar com o banco de dados. Verifique a configuração.' }
+  }
 
   if (!usuario || !usuario.ativo) {
     return { error: 'Usuário não encontrado ou inativo.' }
