@@ -18,22 +18,21 @@ export type MapaNode = {
   sequencia?: number | null
   posicaoX: number
   posicaoY: number
+  // KPIs (somente Processo)
+  tempoMedioCiclo?: number | null
+  custoEstimado?: number | null
+  volumeMensal?: number | null
 }
 
 export type MapaEdge = {
-  source: string // `${tipo}:${id}`
+  source: string
   target: string
 }
 
-/** Invalida todas as telas que mostram dados criados/editados via mapa. */
 function revalidateAll() {
   revalidatePath('/dashboard', 'layout')
 }
 
-/**
- * Carrega todos os nós e arestas (pai→filho) da cadeia de valor.
- * Edges derivam das FKs (cadeiaValorId, megaProcessoId, processoId, subProcessoId).
- */
 export async function getMapa(): Promise<{ nodes: MapaNode[]; edges: MapaEdge[] }> {
   const [cadeias, macros, processos, macroAtivs, atividades] = await Promise.all([
     prisma.cadeiaValor.findMany({ orderBy: { id: 'asc' } }),
@@ -58,6 +57,9 @@ export async function getMapa(): Promise<{ nodes: MapaNode[]; edges: MapaEdge[] 
       tipo: 'processo', id: p.id, parentId: p.megaProcessoId,
       descricao: p.descricao, sequencia: p.sequencia,
       posicaoX: p.posicaoX, posicaoY: p.posicaoY,
+      tempoMedioCiclo: p.tempoMedioCiclo,
+      custoEstimado: p.custoEstimado,
+      volumeMensal: p.volumeMensal,
     })),
     ...macroAtivs.map((s): MapaNode => ({
       tipo: 'macroatividade', id: s.id, parentId: s.processoId,
@@ -90,7 +92,6 @@ export async function getMapa(): Promise<{ nodes: MapaNode[]; edges: MapaEdge[] 
   return { nodes, edges }
 }
 
-/** Cria ou atualiza um nó (descrição/abreviação/sequência). */
 export async function upsertNode(input: {
   tipo: NodeType
   id?: number
@@ -98,12 +99,18 @@ export async function upsertNode(input: {
   descricao: string
   abreviacao?: string
   sequencia?: number
+  tempoMedioCiclo?: number
+  custoEstimado?: number
+  volumeMensal?: number
 }) {
   const validated = NodeUpsertSchema.safeParse(input)
   if (!validated.success) {
     return { error: 'Dados inválidos.', issues: validated.error.flatten().fieldErrors }
   }
-  const { tipo, id, parentId, descricao, abreviacao, sequencia } = validated.data
+  const {
+    tipo, id, parentId, descricao, abreviacao, sequencia,
+    tempoMedioCiclo, custoEstimado, volumeMensal,
+  } = validated.data
 
   switch (tipo) {
     case 'cadeia': {
@@ -129,15 +136,25 @@ export async function upsertNode(input: {
       break
     }
     case 'processo': {
+      const kpiData = {
+        tempoMedioCiclo: tempoMedioCiclo ?? null,
+        custoEstimado: custoEstimado ?? null,
+        volumeMensal: volumeMensal ?? null,
+      }
       if (id) {
         await prisma.processo.update({
           where: { id },
-          data: { descricao, sequencia, ...(parentId ? { megaProcessoId: parentId } : {}) },
+          data: {
+            descricao,
+            sequencia,
+            ...kpiData,
+            ...(parentId ? { megaProcessoId: parentId } : {}),
+          },
         })
       } else {
         if (!parentId) return { error: 'Processo requer um Macroprocesso pai.' }
         await prisma.processo.create({
-          data: { descricao, sequencia, megaProcessoId: parentId },
+          data: { descricao, sequencia, megaProcessoId: parentId, ...kpiData },
         })
       }
       break
@@ -186,7 +203,6 @@ export async function upsertNode(input: {
   return { success: true }
 }
 
-/** Atualiza posição (drag) — chamada com debounce no client. */
 export async function updateNodePosition(input: { tipo: NodeType; id: number; posicaoX: number; posicaoY: number }) {
   const validated = NodePositionSchema.safeParse(input)
   if (!validated.success) return { error: 'Posição inválida.' }
@@ -200,12 +216,10 @@ export async function updateNodePosition(input: { tipo: NodeType; id: number; po
     atividade:      () => prisma.atividade.update({ where: { id }, data: { posicaoX, posicaoY } }),
   }
   await map[tipo]()
-  // posição é meta-dado de UI — não precisa invalidar telas legadas.
   revalidatePath('/dashboard/mapa')
   return { success: true }
 }
 
-/** Exclui um nó (cascade do Postgres cuida dos filhos onde definido). */
 export async function deleteNode(input: { tipo: NodeType; id: number }) {
   if (!NODE_TYPES.includes(input.tipo)) return { error: 'Tipo inválido.' }
   const { tipo, id } = input
