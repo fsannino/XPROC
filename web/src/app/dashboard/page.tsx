@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 
-export const metadata = { title: 'Painel — XPROC' }
+export const metadata = { title: 'Painel — Collab:Flow' }
 
 async function getStats() {
   const [megaProcessos, processos, subProcessos, transacoes, usuarios, empresas] =

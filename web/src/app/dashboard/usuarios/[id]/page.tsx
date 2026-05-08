@@ -6,7 +6,7 @@ import { concederAcesso, revogarAcesso } from '@/actions/usuarios'
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const u = await prisma.usuario.findUnique({ where: { id }, select: { nome: true } })
-  return { title: u ? `${u.nome} — XPROC` : 'Usuário — XPROC' }
+  return { title: u ? `${u.nome} — Collab:Flow` : 'Usuário — Collab:Flow' }
 }
 
 export default async function UsuarioAcessosPage({ params }: { params: Promise<{ id: string }> }) {

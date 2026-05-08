@@ -32,7 +32,7 @@ export default function LoginPage() {
           </div>
           <div className="inline-flex items-center gap-3 text-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-3">
             <span className="w-5 h-px bg-gold" />
-            XPROC — Process &amp; Governance
+            Collab:Flow — Process &amp; Governance
             <span className="w-5 h-px bg-gold" />
           </div>
           <h1 className="font-display text-4xl text-white leading-[1.1]">
@@ -93,19 +93,19 @@ export default function LoginPage() {
               disabled={pending}
               className="w-full bg-navy hover:bg-teal text-white rounded-md py-3 text-sm font-semibold tracking-wide transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
             >
-              {pending ? 'Entrando...' : 'Entrar no XPROC'}
+              {pending ? 'Entrando...' : 'Entrar no Collab:Flow'}
             </button>
           </form>
 
           <p className="text-[11px] text-gray-medium text-center mt-6 leading-relaxed">
             Ao acessar, você concorda com as políticas internas de uso e
-            privacidade do XPROC.
+            privacidade do Collab:Flow.
           </p>
         </div>
 
         {/* Footer minimal */}
         <p className="text-center text-xs text-white/45 mt-6">
-          © {new Date().getFullYear()} XPROC — Gestão de Processos Corporativos
+          © {new Date().getFullYear()} Collab:Flow — Gestão de Processos Corporativos
         </p>
       </div>
     </div>

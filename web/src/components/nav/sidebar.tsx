@@ -31,7 +31,7 @@ export default function Sidebar() {
           <BrandMark size={28} />
           <div className="leading-none">
             <span className="font-sans font-extrabold text-lg tracking-tight text-white">
-              X<span className="text-gold">·</span>PROC
+              Collab<span className="text-gold">:</span>Flow
             </span>
             <span className="block text-[8px] font-medium tracking-[0.2em] uppercase text-white/50 mt-1">
               Processos &amp; Governança
@@ -82,7 +82,7 @@ export default function Sidebar() {
           </button>
         </form>
         <p className="text-[10px] text-white/30 text-center mt-3 tracking-wider uppercase">
-          © {new Date().getFullYear()} XPROC
+          © {new Date().getFullYear()} Collab:Flow
         </p>
       </div>
     </aside>

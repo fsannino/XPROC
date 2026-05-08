@@ -24,7 +24,7 @@ export async function enviarEmail({
   const resend = getResend()
   if (!resend) return // skip silently if not configured
 
-  const from = process.env.RESEND_FROM || 'XPROC <noreply@xproc.app>'
+  const from = process.env.RESEND_FROM || 'Collab:Flow <noreply@xproc.app>'
   await resend.emails.send({ from, to: para, subject: assunto, html })
 }
 
@@ -47,6 +47,6 @@ export function htmlMudancaStatus(
     <p><strong>De:</strong> ${labelMap[statusAnterior] ?? statusAnterior}<br/>
        <strong>Para:</strong> ${labelMap[statusNovo] ?? statusNovo}<br/>
        <strong>Por:</strong> ${autor}</p>
-    <p><a href="${url}">Ver no XPROC</a></p>
+    <p><a href="${url}">Ver no Collab:Flow</a></p>
   `
 }
