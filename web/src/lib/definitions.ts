@@ -88,6 +88,41 @@ export const KpiSchema = z.object({
   volumeMensal: z.number().int().positive().optional(),
 })
 
+// ─── Mapa Visual ──────────────────────────────────────────────────
+
+export const NODE_TYPES = [
+  'cadeia',
+  'macroprocesso',
+  'processo',
+  'macroatividade',
+  'atividade',
+] as const
+export type NodeType = typeof NODE_TYPES[number]
+
+export const MAPA_LEVELS: Record<NodeType, { label: string; color: string; parent: NodeType | null }> = {
+  cadeia:         { label: 'Cadeia de Valor', color: 'navy',       parent: null },
+  macroprocesso:  { label: 'Macroprocesso',   color: 'teal',       parent: 'cadeia' },
+  processo:       { label: 'Processo',        color: 'teal-light', parent: 'macroprocesso' },
+  macroatividade: { label: 'Macroatividade',  color: 'gold',       parent: 'processo' },
+  atividade:      { label: 'Atividade',       color: 'cream',      parent: 'macroatividade' },
+}
+
+export const NodeUpsertSchema = z.object({
+  tipo: z.enum(NODE_TYPES),
+  id: z.number().int().positive().optional(),
+  parentId: z.number().int().positive().optional(),
+  descricao: z.string().min(2).max(200).trim(),
+  abreviacao: z.string().max(8).optional().or(z.literal('')),
+  sequencia: z.number().int().optional(),
+})
+
+export const NodePositionSchema = z.object({
+  tipo: z.enum(NODE_TYPES),
+  id: z.number().int().positive(),
+  posicaoX: z.number(),
+  posicaoY: z.number(),
+})
+
 export type FormState<T = Record<string, string[]>> =
   | { errors?: Partial<Record<keyof T, string[]>>; message?: string }
   | undefined
