@@ -77,8 +77,8 @@ export const ComentarioSchema = z.object({
 export const RiscoSchema = z.object({
   megaProcessoId: z.number().int().positive(),
   descricao: z.string().min(2).max(1000).trim(),
-  probabilidade: z.enum(['A', 'M', 'B']).default('M'),
-  impacto: z.enum(['A', 'M', 'B']).default('M'),
+  probabilidade: z.coerce.number().int().min(1).max(5).default(3),
+  impacto: z.coerce.number().int().min(1).max(5).default(3),
   controle: z.string().max(1000).optional().or(z.literal('')),
 })
 
