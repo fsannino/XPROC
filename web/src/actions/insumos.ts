@@ -149,3 +149,13 @@ export async function criarInsumoForm(_prev: unknown, fd: FormData) {
     tipo: (String(fd.get('tipo') ?? 'DADO') as InsumoTipo),
   })
 }
+
+export async function atualizarInsumoForm(_prev: unknown, fd: FormData) {
+  const id = Number(fd.get('id'))
+  if (!Number.isFinite(id) || id <= 0) return { error: 'ID inválido.' }
+  return atualizarInsumo(id, {
+    codigo: String(fd.get('codigo') ?? ''),
+    descricao: String(fd.get('descricao') ?? ''),
+    tipo: (String(fd.get('tipo') ?? 'DADO') as InsumoTipo),
+  })
+}

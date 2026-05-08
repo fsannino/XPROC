@@ -109,3 +109,13 @@ export async function criarSistemaForm(_prev: unknown, fd: FormData) {
     tipo: (String(fd.get('tipo') ?? 'OUTRO') as SistemaTipo),
   })
 }
+
+export async function atualizarSistemaForm(_prev: unknown, fd: FormData) {
+  const id = Number(fd.get('id'))
+  if (!Number.isFinite(id) || id <= 0) return { error: 'ID inválido.' }
+  return atualizarSistema(id, {
+    codigo: String(fd.get('codigo') ?? ''),
+    nome: String(fd.get('nome') ?? ''),
+    tipo: (String(fd.get('tipo') ?? 'OUTRO') as SistemaTipo),
+  })
+}

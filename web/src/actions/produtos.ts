@@ -106,3 +106,13 @@ export async function criarProdutoForm(_prev: unknown, fd: FormData) {
     tipo: (String(fd.get('tipo') ?? 'BEM') as ProdutoTipo),
   })
 }
+
+export async function atualizarProdutoForm(_prev: unknown, fd: FormData) {
+  const id = Number(fd.get('id'))
+  if (!Number.isFinite(id) || id <= 0) return { error: 'ID inválido.' }
+  return atualizarProduto(id, {
+    codigo: String(fd.get('codigo') ?? ''),
+    descricao: String(fd.get('descricao') ?? ''),
+    tipo: (String(fd.get('tipo') ?? 'BEM') as ProdutoTipo),
+  })
+}

@@ -1,17 +1,13 @@
 export const metadata = { title: 'Catálogo' }
 
 import { prisma } from '@/lib/prisma'
-import { excluirProduto } from '@/actions/produtos'
-import { excluirInsumo } from '@/actions/insumos'
-import { excluirSistema } from '@/actions/sistemas'
-import { DeleteButton } from '@/components/ui/delete-button'
 import {
-  PRODUTO_TIPO_LABEL,
-  INSUMO_TIPO_LABEL,
   type ProdutoTipo,
   type InsumoTipo,
+  type SistemaTipo,
 } from '@/lib/definitions'
 import CatalogoForms from './forms'
+import { ProdutoItem, InsumoItem, SistemaItem } from './items'
 
 export default async function CatalogoPage() {
   const [produtos, insumos, sistemas] = await Promise.all([
@@ -52,17 +48,15 @@ export default async function CatalogoPage() {
               <li className="px-5 py-6 text-sm text-gray-medium italic">Nenhum produto cadastrado.</li>
             )}
             {produtos.map((p) => (
-              <li key={p.id} className="px-5 py-3 flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-mono text-xs text-teal">{p.codigo}</p>
-                  <p className="text-sm font-medium text-navy truncate">{p.descricao}</p>
-                  <p className="text-xs text-gray-medium">
-                    {PRODUTO_TIPO_LABEL[p.tipo as ProdutoTipo]} · {p._count.processos} proc
-                  </p>
-                </div>
-                <DeleteButton
-                  action={excluirProduto.bind(null, p.id)}
-                  confirmText={`Excluir produto "${p.descricao}"?`}
+              <li key={p.id} className="px-5 py-3">
+                <ProdutoItem
+                  p={{
+                    id: p.id,
+                    codigo: p.codigo,
+                    descricao: p.descricao,
+                    tipo: p.tipo as ProdutoTipo,
+                    processosCount: p._count.processos,
+                  }}
                 />
               </li>
             ))}
@@ -78,17 +72,16 @@ export default async function CatalogoPage() {
               <li className="px-5 py-6 text-sm text-gray-medium italic">Nenhum insumo cadastrado.</li>
             )}
             {insumos.map((i) => (
-              <li key={i.id} className="px-5 py-3 flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-mono text-xs text-teal">{i.codigo}</p>
-                  <p className="text-sm font-medium text-navy truncate">{i.descricao}</p>
-                  <p className="text-xs text-gray-medium">
-                    {INSUMO_TIPO_LABEL[i.tipo as InsumoTipo]} · {i._count.processos} proc · {i._count.atividades} ativ
-                  </p>
-                </div>
-                <DeleteButton
-                  action={excluirInsumo.bind(null, i.id)}
-                  confirmText={`Excluir insumo "${i.descricao}"?`}
+              <li key={i.id} className="px-5 py-3">
+                <InsumoItem
+                  i={{
+                    id: i.id,
+                    codigo: i.codigo,
+                    descricao: i.descricao,
+                    tipo: i.tipo as InsumoTipo,
+                    processosCount: i._count.processos,
+                    atividadesCount: i._count.atividades,
+                  }}
                 />
               </li>
             ))}
@@ -104,17 +97,15 @@ export default async function CatalogoPage() {
               <li className="px-5 py-6 text-sm text-gray-medium italic">Nenhum sistema cadastrado.</li>
             )}
             {sistemas.map((s) => (
-              <li key={s.id} className="px-5 py-3 flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-mono text-xs text-teal">{s.codigo}</p>
-                  <p className="text-sm font-medium text-navy truncate">{s.nome}</p>
-                  <p className="text-xs text-gray-medium">
-                    {s.tipo} · {s._count.processos} proc
-                  </p>
-                </div>
-                <DeleteButton
-                  action={excluirSistema.bind(null, s.id)}
-                  confirmText={`Excluir sistema "${s.nome}"?`}
+              <li key={s.id} className="px-5 py-3">
+                <SistemaItem
+                  s={{
+                    id: s.id,
+                    codigo: s.codigo,
+                    nome: s.nome,
+                    tipo: s.tipo as SistemaTipo,
+                    processosCount: s._count.processos,
+                  }}
                 />
               </li>
             ))}
