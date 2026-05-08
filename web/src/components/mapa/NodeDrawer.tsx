@@ -1,9 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { MAPA_LEVELS, type NodeType } from '@/lib/definitions'
+import { MAPA_LEVELS, type NodeType, type DependenciaTipo } from '@/lib/definitions'
 import MultiSelect, { type MultiSelectOption } from '@/components/ui/multi-select'
 import RaciSection, { type RaciAtribuicao, type PessoaOption } from '@/components/mapa/RaciSection'
+import ProdutosSection, { type ProdutoOption } from '@/components/mapa/ProdutosSection'
+import InsumosSection, { type InsumoOption, type InsumoVinculo } from '@/components/mapa/InsumosSection'
+import SistemasSection, { type SistemaOption, type SistemaVinculo } from '@/components/mapa/SistemasSection'
+import DependenciasSection, { type DependenciaItem, type NoOption } from '@/components/mapa/DependenciasSection'
 
 export type DrawerState =
   | { mode: 'create'; tipoFilho: NodeType | null; parentId?: number }
@@ -19,12 +23,27 @@ export type DrawerState =
       volumeMensal?: number | null
     }
 
+export type DependenciasCallbacks = {
+  saidas: DependenciaItem[] | null
+  entradas: DependenciaItem[] | null
+  outrosNos: NoOption[] | null
+  onAdd: (input: { destinoId: number; tipo: DependenciaTipo; descricao?: string }) => Promise<boolean>
+  onRemove: (id: string) => Promise<boolean>
+}
+
 type Props = {
   state: DrawerState
   transacoesDisponiveis?: MultiSelectOption[]
   initialTransacaoIds?: string[] | null
   pessoasDisponiveis?: PessoaOption[]
   initialRaci?: RaciAtribuicao[] | null
+  produtosDisponiveis?: ProdutoOption[]
+  initialProdutoIds?: number[] | null
+  insumosDisponiveis?: InsumoOption[]
+  initialInsumos?: InsumoVinculo[] | null
+  sistemasDisponiveis?: SistemaOption[]
+  initialSistemas?: SistemaVinculo[] | null
+  dependencias?: DependenciasCallbacks
   onClose: () => void
   onSubmit: (payload: {
     mode: 'create' | 'edit'
@@ -39,6 +58,9 @@ type Props = {
     volumeMensal?: number
     transacaoIds?: string[]
     raci?: RaciAtribuicao[]
+    produtoIds?: number[]
+    insumos?: InsumoVinculo[]
+    sistemas?: SistemaVinculo[]
   }) => Promise<boolean>
 }
 
@@ -48,6 +70,13 @@ export default function NodeDrawer({
   initialTransacaoIds,
   pessoasDisponiveis,
   initialRaci,
+  produtosDisponiveis,
+  initialProdutoIds,
+  insumosDisponiveis,
+  initialInsumos,
+  sistemasDisponiveis,
+  initialSistemas,
+  dependencias,
   onClose,
   onSubmit,
 }: Props) {
@@ -59,6 +88,12 @@ export default function NodeDrawer({
   const usaTransacoes =
     state.mode === 'edit' && (tipo === 'processo' || tipo === 'atividade') && transacoesDisponiveis != null
   const usaRaci = state.mode === 'edit' && tipo === 'processo' && pessoasDisponiveis != null
+  const usaProdutos = state.mode === 'edit' && tipo === 'processo' && produtosDisponiveis != null
+  const usaInsumos =
+    state.mode === 'edit' && (tipo === 'processo' || tipo === 'atividade') && insumosDisponiveis != null
+  const usaSistemas = state.mode === 'edit' && tipo === 'processo' && sistemasDisponiveis != null
+  const usaDependencias =
+    state.mode === 'edit' && (tipo === 'processo' || tipo === 'atividade') && dependencias != null
 
   const [descricao, setDescricao] = useState(state.mode === 'edit' ? state.descricao : '')
   const [abreviacao, setAbreviacao] = useState(state.mode === 'edit' ? state.abreviacao ?? '' : '')
@@ -76,20 +111,21 @@ export default function NodeDrawer({
   )
   const [transacaoIds, setTransacaoIds] = useState<string[]>(initialTransacaoIds ?? [])
   const [raci, setRaci] = useState<RaciAtribuicao[]>(initialRaci ?? [])
+  const [produtoIds, setProdutoIds] = useState<number[]>(initialProdutoIds ?? [])
+  const [insumos, setInsumos] = useState<InsumoVinculo[]>(initialInsumos ?? [])
+  const [sistemas, setSistemas] = useState<SistemaVinculo[]>(initialSistemas ?? [])
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (initialTransacaoIds) setTransacaoIds(initialTransacaoIds)
-  }, [initialTransacaoIds])
-
-  useEffect(() => {
-    if (initialRaci) setRaci(initialRaci)
-  }, [initialRaci])
+  useEffect(() => { if (initialTransacaoIds) setTransacaoIds(initialTransacaoIds) }, [initialTransacaoIds])
+  useEffect(() => { if (initialRaci) setRaci(initialRaci) }, [initialRaci])
+  useEffect(() => { if (initialProdutoIds) setProdutoIds(initialProdutoIds) }, [initialProdutoIds])
+  useEffect(() => { if (initialInsumos) setInsumos(initialInsumos) }, [initialInsumos])
+  useEffect(() => { if (initialSistemas) setSistemas(initialSistemas) }, [initialSistemas])
 
   useEffect(() => {
     setError(null)
-  }, [descricao, abreviacao, sequencia, tempoMedio, custo, volume, transacaoIds, raci])
+  }, [descricao, abreviacao, sequencia, tempoMedio, custo, volume, transacaoIds, raci, produtoIds, insumos, sistemas])
 
   async function handle(e: React.FormEvent) {
     e.preventDefault()
@@ -109,6 +145,9 @@ export default function NodeDrawer({
       volumeMensal: usaKpis && volume ? Number(volume) : undefined,
       transacaoIds: usaTransacoes ? transacaoIds : undefined,
       raci: usaRaci ? raci : undefined,
+      produtoIds: usaProdutos ? produtoIds : undefined,
+      insumos: usaInsumos ? insumos : undefined,
+      sistemas: usaSistemas ? sistemas : undefined,
     })
     setPending(false)
     if (!ok) setError('Não foi possível salvar.')
@@ -116,6 +155,12 @@ export default function NodeDrawer({
 
   const carregandoTransacoes = usaTransacoes && initialTransacaoIds == null
   const carregandoRaci = usaRaci && initialRaci == null
+  const carregandoProdutos = usaProdutos && initialProdutoIds == null
+  const carregandoInsumos = usaInsumos && initialInsumos == null
+  const carregandoSistemas = usaSistemas && initialSistemas == null
+
+  const temAlgumaSecao =
+    usaTransacoes || usaKpis || usaRaci || usaProdutos || usaInsumos || usaSistemas || usaDependencias
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
@@ -281,10 +326,45 @@ export default function NodeDrawer({
             />
           )}
 
-          {!usaTransacoes && !usaKpis && !usaRaci && (
+          {usaProdutos && (
+            <ProdutosSection
+              produtos={produtosDisponiveis ?? []}
+              selecionados={carregandoProdutos ? null : produtoIds}
+              onChange={setProdutoIds}
+            />
+          )}
+
+          {usaInsumos && (
+            <InsumosSection
+              insumos={insumosDisponiveis ?? []}
+              vinculos={carregandoInsumos ? null : insumos}
+              onChange={setInsumos}
+            />
+          )}
+
+          {usaSistemas && (
+            <SistemasSection
+              sistemas={sistemasDisponiveis ?? []}
+              vinculos={carregandoSistemas ? null : sistemas}
+              onChange={setSistemas}
+            />
+          )}
+
+          {usaDependencias && state.mode === 'edit' && (
+            <DependenciasSection
+              proprioId={state.id}
+              outrosNos={dependencias.outrosNos}
+              saidas={dependencias.saidas}
+              entradas={dependencias.entradas}
+              onAdd={dependencias.onAdd}
+              onRemove={dependencias.onRemove}
+            />
+          )}
+
+          {!temAlgumaSecao && state.mode === 'edit' && (
             <div className="bg-[rgba(247,168,35,0.08)] border-l-3 border-gold rounded-md px-3.5 py-2.5 text-xs text-slate">
-              <strong className="text-navy">Próximos passos:</strong> Inputs/Outputs, Produtos e
-              Dependências serão adicionados em entregas futuras.
+              <strong className="text-navy">Nó hierárquico:</strong> use Macroprocesso/Processo/Atividade para
+              vincular atributos detalhados.
             </div>
           )}
 
@@ -305,7 +385,15 @@ export default function NodeDrawer({
           </button>
           <button
             type="submit"
-            disabled={pending || descricao.trim().length < 2 || carregandoTransacoes || carregandoRaci}
+            disabled={
+              pending ||
+              descricao.trim().length < 2 ||
+              carregandoTransacoes ||
+              carregandoRaci ||
+              carregandoProdutos ||
+              carregandoInsumos ||
+              carregandoSistemas
+            }
             onClick={handle}
             className="px-5 py-2 rounded-md text-sm font-semibold bg-navy hover:bg-teal text-white transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >

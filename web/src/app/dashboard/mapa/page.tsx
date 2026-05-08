@@ -1,18 +1,27 @@
 import { getMapa } from '@/actions/mapa'
 import { listarPessoasParaRaci } from '@/actions/raci'
+import { listarProdutos } from '@/actions/produtos'
+import { listarInsumos } from '@/actions/insumos'
+import { listarSistemas } from '@/actions/sistemas'
+import { listarTodasDependenciasDeProcesso, listarTodasDependenciasDeAtividade } from '@/actions/dependencias'
 import { prisma } from '@/lib/prisma'
 import MapaCanvas from './MapaCanvas'
 
 export const metadata = { title: 'Mapa Visual' }
 
 export default async function MapaPage() {
-  const [initial, transacoes, pessoas] = await Promise.all([
+  const [initial, transacoes, pessoas, produtos, insumos, sistemas, depsProcesso, depsAtividade] = await Promise.all([
     getMapa(),
     prisma.transacao.findMany({
       orderBy: { id: 'asc' },
       select: { id: true, descricao: true },
     }),
     listarPessoasParaRaci(),
+    listarProdutos(),
+    listarInsumos(),
+    listarSistemas(),
+    listarTodasDependenciasDeProcesso(),
+    listarTodasDependenciasDeAtividade(),
   ])
 
   return (
@@ -37,6 +46,11 @@ export default async function MapaPage() {
             hint: t.id,
           }))}
           pessoas={pessoas}
+          produtos={produtos}
+          insumos={insumos}
+          sistemas={sistemas}
+          dependenciasProcesso={depsProcesso}
+          dependenciasAtividade={depsAtividade}
         />
       </div>
     </div>

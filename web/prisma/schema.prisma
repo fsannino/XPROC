@@ -132,6 +132,11 @@ model Processo {
   transacoes     TransacaoProcesso[]
   cenarios       CenarioProcesso[]
   raciAtribuicoes RaciAtribuicao[]
+  produtos        ProcessoProduto[]
+  insumos         InsumoProcesso[]
+  sistemas        ProcessoSistema[]
+  dependenciasOrigem  DependenciaProcesso[] @relation("DepProcessoOrigem")
+  dependenciasDestino DependenciaProcesso[] @relation("DepProcessoDestino")
 
   @@map("processo")
 }
@@ -169,6 +174,9 @@ model Atividade {
   subProcesso   SubProcesso  @relation(fields: [subProcessoId], references: [id], onDelete: Cascade)
   transacoes    TransacaoAtividade[]
   cenarios      CenarioAtividade[]
+  insumos       InsumoAtividade[]
+  dependenciasOrigem  DependenciaAtividade[] @relation("DepAtividadeOrigem")
+  dependenciasDestino DependenciaAtividade[] @relation("DepAtividadeDestino")
 
   @@index([subProcessoId])
   @@map("atividade")
@@ -493,4 +501,141 @@ model RaciAtribuicao {
   @@index([processoId])
   @@index([pessoaId])
   @@map("raci_atribuicao")
+}
+
+// ─── Produtos ───────────────────────────────────────────────────────
+// Saidas tangiveis/intangiveis associadas a um Processo (compartilhaveis).
+model Produto {
+  id           Int       @id @default(autoincrement())
+  codigo       String    @unique
+  descricao    String
+  tipo         String    @default("BEM") // BEM | SERVICO | INFORMACAO
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  processos    ProcessoProduto[]
+
+  @@map("produto")
+}
+
+model ProcessoProduto {
+  processoId Int      @map("processo_id")
+  produtoId  Int      @map("produto_id")
+  criadoEm   DateTime @default(now()) @map("criado_em")
+
+  processo   Processo @relation(fields: [processoId], references: [id], onDelete: Cascade)
+  produto    Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@id([processoId, produtoId])
+  @@index([produtoId])
+  @@map("processo_produto")
+}
+
+// ─── Insumos (Inputs / Outputs) ─────────────────────────────────────
+// Catalogo unico; relacao com Processo e Atividade carrega a direcao.
+model Insumo {
+  id           Int       @id @default(autoincrement())
+  codigo       String    @unique
+  descricao    String
+  tipo         String    @default("DADO") // DADO | DOCUMENTO | MATERIAL | SERVICO
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  processos    InsumoProcesso[]
+  atividades   InsumoAtividade[]
+
+  @@map("insumo")
+}
+
+model InsumoProcesso {
+  insumoId   Int      @map("insumo_id")
+  processoId Int      @map("processo_id")
+  direcao    String   // INPUT | OUTPUT
+  criadoEm   DateTime @default(now()) @map("criado_em")
+
+  insumo     Insumo   @relation(fields: [insumoId], references: [id], onDelete: Cascade)
+  processo   Processo @relation(fields: [processoId], references: [id], onDelete: Cascade)
+
+  @@id([insumoId, processoId, direcao])
+  @@index([processoId, direcao])
+  @@map("insumo_processo")
+}
+
+model InsumoAtividade {
+  insumoId    Int       @map("insumo_id")
+  atividadeId Int       @map("atividade_id")
+  direcao     String    // INPUT | OUTPUT
+  criadoEm    DateTime  @default(now()) @map("criado_em")
+
+  insumo      Insumo    @relation(fields: [insumoId], references: [id], onDelete: Cascade)
+  atividade   Atividade @relation(fields: [atividadeId], references: [id], onDelete: Cascade)
+
+  @@id([insumoId, atividadeId, direcao])
+  @@index([atividadeId, direcao])
+  @@map("insumo_atividade")
+}
+
+// ─── Sistemas externos ──────────────────────────────────────────────
+model Sistema {
+  id           Int       @id @default(autoincrement())
+  codigo       String    @unique
+  nome         String
+  tipo         String    @default("OUTRO") // ERP | CRM | BI | RPA | OUTRO
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  processos    ProcessoSistema[]
+
+  @@map("sistema")
+}
+
+model ProcessoSistema {
+  processoId Int      @map("processo_id")
+  sistemaId  Int      @map("sistema_id")
+  papel      String   @default("CONSUMIDOR") // CONSUMIDOR | PRODUTOR | AMBOS
+  criadoEm   DateTime @default(now()) @map("criado_em")
+
+  processo   Processo @relation(fields: [processoId], references: [id], onDelete: Cascade)
+  sistema    Sistema  @relation(fields: [sistemaId], references: [id], onDelete: Cascade)
+
+  @@id([processoId, sistemaId])
+  @@index([sistemaId])
+  @@map("processo_sistema")
+}
+
+// ─── Dependencias entre nos ──────────────────────────────────────────
+// Aresta dirigida origem -> destino. Renderiza como edge tracejada
+// extra no React Flow (alem das edges hierarquicas).
+model DependenciaProcesso {
+  id           String   @id @default(cuid())
+  origemId     Int      @map("origem_id")
+  destinoId    Int      @map("destino_id")
+  tipo         String   @default("PRECEDE") // PRECEDE | REQUER | COMPARTILHA
+  descricao    String?
+  criadoEm     DateTime @default(now()) @map("criado_em")
+
+  origem       Processo @relation("DepProcessoOrigem", fields: [origemId], references: [id], onDelete: Cascade)
+  destino      Processo @relation("DepProcessoDestino", fields: [destinoId], references: [id], onDelete: Cascade)
+
+  @@unique([origemId, destinoId, tipo])
+  @@index([origemId])
+  @@index([destinoId])
+  @@map("dependencia_processo")
+}
+
+model DependenciaAtividade {
+  id           String    @id @default(cuid())
+  origemId     Int       @map("origem_id")
+  destinoId    Int       @map("destino_id")
+  tipo         String    @default("PRECEDE") // PRECEDE | REQUER | COMPARTILHA
+  descricao    String?
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+
+  origem       Atividade @relation("DepAtividadeOrigem", fields: [origemId], references: [id], onDelete: Cascade)
+  destino      Atividade @relation("DepAtividadeDestino", fields: [destinoId], references: [id], onDelete: Cascade)
+
+  @@unique([origemId, destinoId, tipo])
+  @@index([origemId])
+  @@index([destinoId])
+  @@map("dependencia_atividade")
 }
