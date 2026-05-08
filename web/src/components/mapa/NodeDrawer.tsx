@@ -6,13 +6,21 @@ import MultiSelect, { type MultiSelectOption } from '@/components/ui/multi-selec
 
 export type DrawerState =
   | { mode: 'create'; tipoFilho: NodeType | null; parentId?: number }
-  | { mode: 'edit'; tipo: NodeType; id: number; descricao: string; abreviacao?: string; sequencia?: number }
+  | {
+      mode: 'edit'
+      tipo: NodeType
+      id: number
+      descricao: string
+      abreviacao?: string
+      sequencia?: number
+      tempoMedioCiclo?: number | null
+      custoEstimado?: number | null
+      volumeMensal?: number | null
+    }
 
 type Props = {
   state: DrawerState
-  /** Lista completa de transações (somente exibida quando tipo é processo/atividade). */
   transacoesDisponiveis?: MultiSelectOption[]
-  /** IDs das transações já vinculadas. `null` = ainda carregando. `undefined` = não se aplica. */
   initialTransacaoIds?: string[] | null
   onClose: () => void
   onSubmit: (payload: {
@@ -23,6 +31,9 @@ type Props = {
     descricao: string
     abreviacao?: string
     sequencia?: number
+    tempoMedioCiclo?: number
+    custoEstimado?: number
+    volumeMensal?: number
     transacaoIds?: string[]
   }) => Promise<boolean>
 }
@@ -38,6 +49,7 @@ export default function NodeDrawer({
   const meta = MAPA_LEVELS[tipo]
   const usaAbreviacao = tipo === 'cadeia' || tipo === 'macroprocesso'
   const usaSequencia = tipo === 'processo' || tipo === 'macroatividade' || tipo === 'atividade'
+  const usaKpis = tipo === 'processo'
   const usaTransacoes =
     state.mode === 'edit' && (tipo === 'processo' || tipo === 'atividade') && transacoesDisponiveis != null
 
@@ -46,18 +58,26 @@ export default function NodeDrawer({
   const [sequencia, setSequencia] = useState<string>(
     state.mode === 'edit' && state.sequencia != null ? String(state.sequencia) : '',
   )
+  const [tempoMedio, setTempoMedio] = useState<string>(
+    state.mode === 'edit' && state.tempoMedioCiclo != null ? String(state.tempoMedioCiclo) : '',
+  )
+  const [custo, setCusto] = useState<string>(
+    state.mode === 'edit' && state.custoEstimado != null ? String(state.custoEstimado) : '',
+  )
+  const [volume, setVolume] = useState<string>(
+    state.mode === 'edit' && state.volumeMensal != null ? String(state.volumeMensal) : '',
+  )
   const [transacaoIds, setTransacaoIds] = useState<string[]>(initialTransacaoIds ?? [])
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Sincroniza quando o array de IDs vem de fora (fetch assíncrono no canvas)
   useEffect(() => {
     if (initialTransacaoIds) setTransacaoIds(initialTransacaoIds)
   }, [initialTransacaoIds])
 
   useEffect(() => {
     setError(null)
-  }, [descricao, abreviacao, sequencia, transacaoIds])
+  }, [descricao, abreviacao, sequencia, tempoMedio, custo, volume, transacaoIds])
 
   async function handle(e: React.FormEvent) {
     e.preventDefault()
@@ -72,6 +92,9 @@ export default function NodeDrawer({
       descricao,
       abreviacao: abreviacao || undefined,
       sequencia: sequencia ? Number(sequencia) : undefined,
+      tempoMedioCiclo: usaKpis && tempoMedio ? Number(tempoMedio) : undefined,
+      custoEstimado: usaKpis && custo ? Number(custo) : undefined,
+      volumeMensal: usaKpis && volume ? Number(volume) : undefined,
       transacaoIds: usaTransacoes ? transacaoIds : undefined,
     })
     setPending(false)
@@ -152,6 +175,70 @@ export default function NodeDrawer({
             </div>
           )}
 
+          {usaKpis && (
+            <fieldset className="border border-[#E2E8F0] rounded-md p-4 space-y-3">
+              <legend className="px-2 text-[10px] font-bold tracking-[0.18em] uppercase text-teal">
+                KPIs
+              </legend>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <label htmlFor="tempoMedio" className="block text-xs font-semibold tracking-wider uppercase text-navy mb-1.5">
+                    Tempo médio de ciclo
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="tempoMedio"
+                      type="number"
+                      step="0.1"
+                      min={0}
+                      value={tempoMedio}
+                      onChange={(e) => setTempoMedio(e.target.value)}
+                      className="w-full rounded-md border border-[#E2E8F0] bg-[#F5F6F8] px-3.5 py-2 pr-12 text-sm text-slate font-mono focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent"
+                      placeholder="0"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-medium uppercase tracking-wider">dias</span>
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="custo" className="block text-xs font-semibold tracking-wider uppercase text-navy mb-1.5">
+                    Custo estimado
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-medium uppercase">R$</span>
+                    <input
+                      id="custo"
+                      type="number"
+                      step="0.01"
+                      min={0}
+                      value={custo}
+                      onChange={(e) => setCusto(e.target.value)}
+                      className="w-full rounded-md border border-[#E2E8F0] bg-[#F5F6F8] pl-10 pr-3 py-2 text-sm text-slate font-mono focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="volume" className="block text-xs font-semibold tracking-wider uppercase text-navy mb-1.5">
+                    Volume mensal
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="volume"
+                      type="number"
+                      min={0}
+                      step={1}
+                      value={volume}
+                      onChange={(e) => setVolume(e.target.value)}
+                      className="w-full rounded-md border border-[#E2E8F0] bg-[#F5F6F8] px-3.5 py-2 pr-12 text-sm text-slate font-mono focus:outline-none focus:ring-2 focus:ring-teal focus:border-transparent"
+                      placeholder="0"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-medium uppercase tracking-wider">/mês</span>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          )}
+
           {usaTransacoes && (
             <div>
               <label className="block text-xs font-semibold tracking-wider uppercase text-navy mb-2">
@@ -172,9 +259,9 @@ export default function NodeDrawer({
             </div>
           )}
 
-          {!usaTransacoes && (
+          {!usaTransacoes && !usaKpis && (
             <div className="bg-[rgba(247,168,35,0.08)] border-l-3 border-gold rounded-md px-3.5 py-2.5 text-xs text-slate">
-              <strong className="text-navy">Próximos passos:</strong> KPIs, Áreas, Pessoas/Funções,
+              <strong className="text-navy">Próximos passos:</strong> Áreas, Pessoas/Funções,
               Inputs/Outputs, Produtos e Dependências serão adicionados em entregas futuras.
             </div>
           )}

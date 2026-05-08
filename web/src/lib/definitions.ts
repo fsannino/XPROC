@@ -114,6 +114,10 @@ export const NodeUpsertSchema = z.object({
   descricao: z.string().min(2).max(200).trim(),
   abreviacao: z.string().max(8).optional().or(z.literal('')),
   sequencia: z.number().int().optional(),
+  // KPIs (somente Processo)
+  tempoMedioCiclo: z.number().positive().optional(),
+  custoEstimado: z.number().positive().optional(),
+  volumeMensal: z.number().int().positive().optional(),
 })
 
 export const NodePositionSchema = z.object({

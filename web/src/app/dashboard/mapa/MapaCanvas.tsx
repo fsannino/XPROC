@@ -67,6 +67,13 @@ export default function MapaCanvas(props: Props) {
 function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
   const router = useRouter()
 
+  // Mantém índice por id para o onNodeClick recuperar KPIs sem refetch
+  const nodesById = useMemo(() => {
+    const m = new Map<string, MapaNode>()
+    for (const n of initialNodes) m.set(nodeKey(n.tipo, n.id), n)
+    return m
+  }, [initialNodes])
+
   const grouped = useMemo(() => {
     const indexByType: Record<NodeType, number> = {
       cadeia: 0, macroprocesso: 0, processo: 0, macroatividade: 0, atividade: 0,
@@ -83,6 +90,9 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
           label: n.descricao,
           abreviacao: n.abreviacao,
           sequencia: n.sequencia,
+          tempoMedioCiclo: n.tempoMedioCiclo,
+          custoEstimado: n.custoEstimado,
+          volumeMensal: n.volumeMensal,
           onAddChild: () => openDrawerFor({ mode: 'create', tipoFilho: childTipo(n.tipo), parentId: n.id }),
           onDelete: () => handleDelete(n.tipo, n.id),
         },
@@ -146,7 +156,14 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
 
   const onNodeClick = useCallback(async (_: React.MouseEvent, n: Node) => {
     const { tipo, id } = parseKey(n.id)
-    const data = n.data as { label: string; abreviacao?: string | null; sequencia?: number | null }
+    const data = n.data as {
+      label: string
+      abreviacao?: string | null
+      sequencia?: number | null
+      tempoMedioCiclo?: number | null
+      custoEstimado?: number | null
+      volumeMensal?: number | null
+    }
     setDrawer({
       mode: 'edit',
       tipo,
@@ -154,8 +171,10 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
       descricao: data.label,
       abreviacao: data.abreviacao ?? '',
       sequencia: data.sequencia ?? undefined,
+      tempoMedioCiclo: data.tempoMedioCiclo ?? null,
+      custoEstimado: data.custoEstimado ?? null,
+      volumeMensal: data.volumeMensal ?? null,
     })
-    // Para Processo/Atividade, busca transações vinculadas em segundo plano
     if (tipo === 'processo') {
       setDrawerTransacoes(null)
       try {
@@ -185,23 +204,27 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
     descricao: string
     abreviacao?: string
     sequencia?: number
+    tempoMedioCiclo?: number
+    custoEstimado?: number
+    volumeMensal?: number
     transacaoIds?: string[]
   }) => {
     const res = await upsertNode({
-      mode: payload.mode,
       tipo: payload.tipo,
       id: payload.id,
       parentId: payload.parentId,
       descricao: payload.descricao,
       abreviacao: payload.abreviacao,
       sequencia: payload.sequencia,
-    } as Parameters<typeof upsertNode>[0])
+      tempoMedioCiclo: payload.tempoMedioCiclo,
+      custoEstimado: payload.custoEstimado,
+      volumeMensal: payload.volumeMensal,
+    })
     if (!res?.success) {
       alert(res?.error ?? 'Falha ao salvar.')
       return false
     }
 
-    // Sincroniza transações se aplicável
     if (payload.transacaoIds && payload.id && payload.mode === 'edit') {
       if (payload.tipo === 'processo') {
         await setProcessoTransacoes({ processoId: payload.id, transacaoIds: payload.transacaoIds })
@@ -220,6 +243,8 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
     const map = dragTimers.current
     return () => map.forEach((t) => clearTimeout(t))
   }, [])
+
+  void nodesById // (referenciado para evitar lint warning; reservado para futuras consultas)
 
   return (
     <div className="relative w-full h-full">
