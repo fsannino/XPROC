@@ -8,13 +8,17 @@ export default function DashboardError({
   reset: () => void
 }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-64 gap-4 text-center">
-      <div className="text-4xl">⚠️</div>
-      <h2 className="text-lg font-semibold text-gray-800">Algo deu errado</h2>
-      <p className="text-sm text-gray-500 max-w-sm">{error.message || 'Ocorreu um erro inesperado.'}</p>
+    <div className="flex flex-col items-center justify-center min-h-64 gap-4 text-center bg-white border border-[#E2E8F0] border-t-4 border-t-[#E05040] rounded-lg p-10">
+      <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#E05040]">
+        Falha inesperada
+      </p>
+      <h2 className="font-display text-2xl text-navy">Algo deu errado</h2>
+      <p className="text-sm text-gray-medium max-w-sm">
+        {error.message || 'Ocorreu um erro inesperado ao processar sua solicitação.'}
+      </p>
       <button
         onClick={reset}
-        className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800"
+        className="bg-navy hover:bg-teal text-white px-5 py-2.5 rounded-md text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md"
       >
         Tentar novamente
       </button>
