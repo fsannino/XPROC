@@ -65,6 +65,24 @@ model UsuarioPerfil {
   @@map("usuario_perfil")
 }
 
+// ─── Cadeia de Valor (acima do Macroprocesso) ────────────────────
+// Mapa visual: Cadeia de Valor → Macroprocesso (=MegaProcesso) →
+// Processo → Macroatividade (=SubProcesso) → Atividade.
+
+model CadeiaValor {
+  id           Int       @id @default(autoincrement())
+  descricao    String
+  abreviacao   String?
+  posicaoX     Float     @default(0) @map("posicao_x")
+  posicaoY     Float     @default(0) @map("posicao_y")
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  macroprocessos MegaProcesso[]
+
+  @@map("cadeia_valor")
+}
+
 // ─── Hierarquia de Processos ──────────────────────────────────────
 
 model MegaProcesso {
@@ -77,6 +95,9 @@ model MegaProcesso {
   descricaoLonga  String?  @map("mepr_tx_descricao") @db.Text
   status          String   @default("Publicado") @map("mepr_tx_status")
   responsavelId   String?  @map("responsavel_id")
+  cadeiaValorId   Int?     @map("cadeia_valor_id")
+  posicaoX        Float    @default(0) @map("posicao_x")
+  posicaoY        Float    @default(0) @map("posicao_y")
   criadoEm      DateTime  @default(now()) @map("criado_em")
   atualizadoEm  DateTime  @updatedAt @map("atualizado_em")
 
@@ -88,7 +109,9 @@ model MegaProcesso {
   versoes         MegaProcessoVersao[]
   riscos          ProcessoRisco[]
   responsavel     Usuario?             @relation("MegaProcessoResponsavel", fields: [responsavelId], references: [id])
+  cadeiaValor     CadeiaValor?         @relation(fields: [cadeiaValorId], references: [id], onDelete: SetNull)
 
+  @@index([cadeiaValorId])
   @@map("mega_processo")
 }
 
@@ -100,6 +123,8 @@ model Processo {
   tempoMedioCiclo Float?      @map("proc_nr_tempo_medio")
   custoEstimado   Float?      @map("proc_nr_custo")
   volumeMensal    Int?        @map("proc_nr_volume")
+  posicaoX        Float       @default(0) @map("posicao_x")
+  posicaoY        Float       @default(0) @map("posicao_y")
   criadoEm     DateTime     @default(now()) @map("criado_em")
   atualizadoEm DateTime     @updatedAt @map("atualizado_em")
 
@@ -116,14 +141,33 @@ model SubProcesso {
   descricao      String    @map("supr_tx_desc_sub_processo")
   sequencia      Int?      @map("supr_nr_sequencia")
   impacto        Int?      @map("supr_tx_impacto")
+  posicaoX       Float     @default(0) @map("posicao_x")
+  posicaoY       Float     @default(0) @map("posicao_y")
   criadoEm     DateTime  @default(now()) @map("criado_em")
   atualizadoEm DateTime  @updatedAt @map("atualizado_em")
 
   processo       Processo  @relation(fields: [processoId], references: [id])
   empresas       SubProcessoEmpresa[]
   atividades     AtividadeCarga[]
+  atividadesMapa Atividade[]
 
   @@map("sub_processo")
+}
+
+model Atividade {
+  id            Int          @id @default(autoincrement())
+  subProcessoId Int          @map("sub_processo_id")
+  descricao     String
+  sequencia     Int?
+  posicaoX      Float        @default(0) @map("posicao_x")
+  posicaoY      Float        @default(0) @map("posicao_y")
+  criadoEm      DateTime     @default(now()) @map("criado_em")
+  atualizadoEm  DateTime     @updatedAt @map("atualizado_em")
+
+  subProcesso   SubProcesso  @relation(fields: [subProcessoId], references: [id], onDelete: Cascade)
+
+  @@index([subProcessoId])
+  @@map("atividade")
 }
 
 model Transacao {
@@ -202,7 +246,7 @@ model SubProcessoEmpresa {
   @@map("sub_processo_empresa")
 }
 
-// ─── Atividades ───────────────────────────────────────────────────
+// ─── Atividades de carga (legado) ─────────────────────────────────
 
 model AtividadeCarga {
   id            Int         @id @default(autoincrement()) @map("atca_cd_atividade_carga")
