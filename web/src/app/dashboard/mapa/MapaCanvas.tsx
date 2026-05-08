@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -57,6 +58,8 @@ export default function MapaCanvas(props: Props) {
 }
 
 function CanvasInner({ initialNodes, initialEdges }: Props) {
+  const router = useRouter()
+
   const grouped = useMemo(() => {
     const indexByType: Record<NodeType, number> = {
       cadeia: 0, macroprocesso: 0, processo: 0, macroatividade: 0, atividade: 0,
@@ -108,7 +111,8 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
       return
     }
     setNodes((ns) => ns.filter((n) => n.id !== nodeKey(tipo, id)))
-  }, [])
+    router.refresh()
+  }, [router])
 
   const onNodesChange: OnNodesChange = useCallback((changes: NodeChange[]) => {
     setNodes((ns) => applyNodeChanges(changes, ns))
@@ -158,13 +162,12 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
       return false
     }
     setDrawer(null)
-    // Server revalidation cuidará da UI no próximo load; aqui mantemos o
-    // estado local em sincronia mínima fechando o drawer. Para refresh
-    // completo (incluindo nós novos), o usuário pode recarregar; uma evolução
-    // futura pode usar router.refresh().
-    if (typeof window !== 'undefined') window.location.reload()
+    // router.refresh() invalida o Router Cache do Next, então quando o
+    // usuário navegar para /processos, /transacoes, etc., os dados serão
+    // re-buscados do banco (com revalidatePath em layout no server action).
+    router.refresh()
     return true
-  }, [])
+  }, [router])
 
   // Fechar timers ao desmontar
   useEffect(() => {
