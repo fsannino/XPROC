@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { MAPA_LEVELS, type NodeType } from '@/lib/definitions'
+import MultiSelect, { type MultiSelectOption } from '@/components/ui/multi-select'
 
 export type DrawerState =
   | { mode: 'create'; tipoFilho: NodeType | null; parentId?: number }
@@ -9,6 +10,10 @@ export type DrawerState =
 
 type Props = {
   state: DrawerState
+  /** Lista completa de transações (somente exibida quando tipo é processo/atividade). */
+  transacoesDisponiveis?: MultiSelectOption[]
+  /** IDs das transações já vinculadas. `null` = ainda carregando. `undefined` = não se aplica. */
+  initialTransacaoIds?: string[] | null
   onClose: () => void
   onSubmit: (payload: {
     mode: 'create' | 'edit'
@@ -18,26 +23,41 @@ type Props = {
     descricao: string
     abreviacao?: string
     sequencia?: number
+    transacaoIds?: string[]
   }) => Promise<boolean>
 }
 
-export default function NodeDrawer({ state, onClose, onSubmit }: Props) {
+export default function NodeDrawer({
+  state,
+  transacoesDisponiveis,
+  initialTransacaoIds,
+  onClose,
+  onSubmit,
+}: Props) {
   const tipo = state.mode === 'edit' ? state.tipo : (state.tipoFilho ?? 'cadeia')
   const meta = MAPA_LEVELS[tipo]
   const usaAbreviacao = tipo === 'cadeia' || tipo === 'macroprocesso'
   const usaSequencia = tipo === 'processo' || tipo === 'macroatividade' || tipo === 'atividade'
+  const usaTransacoes =
+    state.mode === 'edit' && (tipo === 'processo' || tipo === 'atividade') && transacoesDisponiveis != null
 
   const [descricao, setDescricao] = useState(state.mode === 'edit' ? state.descricao : '')
   const [abreviacao, setAbreviacao] = useState(state.mode === 'edit' ? state.abreviacao ?? '' : '')
   const [sequencia, setSequencia] = useState<string>(
     state.mode === 'edit' && state.sequencia != null ? String(state.sequencia) : '',
   )
+  const [transacaoIds, setTransacaoIds] = useState<string[]>(initialTransacaoIds ?? [])
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Sincroniza quando o array de IDs vem de fora (fetch assíncrono no canvas)
+  useEffect(() => {
+    if (initialTransacaoIds) setTransacaoIds(initialTransacaoIds)
+  }, [initialTransacaoIds])
+
   useEffect(() => {
     setError(null)
-  }, [descricao, abreviacao, sequencia])
+  }, [descricao, abreviacao, sequencia, transacaoIds])
 
   async function handle(e: React.FormEvent) {
     e.preventDefault()
@@ -52,10 +72,13 @@ export default function NodeDrawer({ state, onClose, onSubmit }: Props) {
       descricao,
       abreviacao: abreviacao || undefined,
       sequencia: sequencia ? Number(sequencia) : undefined,
+      transacaoIds: usaTransacoes ? transacaoIds : undefined,
     })
     setPending(false)
     if (!ok) setError('Não foi possível salvar.')
   }
+
+  const carregandoTransacoes = usaTransacoes && initialTransacaoIds == null
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
@@ -65,7 +88,7 @@ export default function NodeDrawer({ state, onClose, onSubmit }: Props) {
         onClick={onClose}
         className="absolute inset-0 bg-navy-dark/40"
       />
-      <aside className="absolute right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white shadow-2xl flex flex-col">
+      <aside className="absolute right-0 top-0 bottom-0 w-full sm:w-[480px] bg-white shadow-2xl flex flex-col">
         <div className="px-6 py-5 border-b border-[#E2E8F0]">
           <p className="section-tag mb-1">{state.mode === 'edit' ? 'Editar' : 'Novo'}</p>
           <h2 className="font-display text-2xl text-navy">{meta.label}</h2>
@@ -129,10 +152,32 @@ export default function NodeDrawer({ state, onClose, onSubmit }: Props) {
             </div>
           )}
 
-          <div className="bg-[rgba(247,168,35,0.08)] border-l-3 border-gold rounded-md px-3.5 py-2.5 text-xs text-slate">
-            <strong className="text-navy">Próximos passos:</strong> KPIs, Áreas, Pessoas/Funções,
-            Inputs/Outputs, Produtos e Dependências serão adicionados em entregas futuras.
-          </div>
+          {usaTransacoes && (
+            <div>
+              <label className="block text-xs font-semibold tracking-wider uppercase text-navy mb-2">
+                Transações relacionadas
+              </label>
+              {carregandoTransacoes ? (
+                <p className="text-xs text-gray-medium italic py-3">Carregando transações...</p>
+              ) : (
+                <MultiSelect
+                  options={transacoesDisponiveis ?? []}
+                  selected={transacaoIds}
+                  onChange={setTransacaoIds}
+                  placeholder="Buscar transação..."
+                  emptyMessage="Nenhuma transação cadastrada."
+                  maxHeight={180}
+                />
+              )}
+            </div>
+          )}
+
+          {!usaTransacoes && (
+            <div className="bg-[rgba(247,168,35,0.08)] border-l-3 border-gold rounded-md px-3.5 py-2.5 text-xs text-slate">
+              <strong className="text-navy">Próximos passos:</strong> KPIs, Áreas, Pessoas/Funções,
+              Inputs/Outputs, Produtos e Dependências serão adicionados em entregas futuras.
+            </div>
+          )}
 
           {error && (
             <p role="alert" className="text-sm text-[#9A2E1F] bg-[rgba(224,80,64,0.08)] border-l-3 border-[#E05040] rounded-md px-3.5 py-2.5">
@@ -151,7 +196,7 @@ export default function NodeDrawer({ state, onClose, onSubmit }: Props) {
           </button>
           <button
             type="submit"
-            disabled={pending || descricao.trim().length < 2}
+            disabled={pending || descricao.trim().length < 2 || carregandoTransacoes}
             onClick={handle}
             className="px-5 py-2 rounded-md text-sm font-semibold bg-navy hover:bg-teal text-white transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
