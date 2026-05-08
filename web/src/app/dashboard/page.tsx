@@ -17,41 +17,108 @@ async function getStats() {
 }
 
 const cards = [
-  { label: 'Mega-Processos', key: 'megaProcessos', href: '/dashboard/processos', color: 'bg-blue-500' },
-  { label: 'Processos', key: 'processos', href: '/dashboard/processos', color: 'bg-indigo-500' },
-  { label: 'Sub-Processos', key: 'subProcessos', href: '/dashboard/processos', color: 'bg-violet-500' },
-  { label: 'Transações', key: 'transacoes', href: '/dashboard/transacoes', color: 'bg-emerald-500' },
-  { label: 'Usuários Ativos', key: 'usuarios', href: '/dashboard/usuarios', color: 'bg-amber-500' },
-  { label: 'Empresas', key: 'empresas', href: '/dashboard/empresas', color: 'bg-rose-500' },
+  {
+    label: 'Mega-Processos',
+    key: 'megaProcessos',
+    href: '/dashboard/processos',
+    accent: 'navy',
+    description: 'Visão estratégica dos processos.',
+  },
+  {
+    label: 'Processos',
+    key: 'processos',
+    href: '/dashboard/processos',
+    accent: 'teal',
+    description: 'Mapa operacional ponta-a-ponta.',
+  },
+  {
+    label: 'Sub-Processos',
+    key: 'subProcessos',
+    href: '/dashboard/processos',
+    accent: 'teal',
+    description: 'Atividades detalhadas em cada fluxo.',
+  },
+  {
+    label: 'Transações',
+    key: 'transacoes',
+    href: '/dashboard/transacoes',
+    accent: 'gold',
+    description: 'Movimentações registradas no sistema.',
+  },
+  {
+    label: 'Usuários Ativos',
+    key: 'usuarios',
+    href: '/dashboard/usuarios',
+    accent: 'navy',
+    description: 'Pessoas com acesso vigente.',
+  },
+  {
+    label: 'Empresas',
+    key: 'empresas',
+    href: '/dashboard/empresas',
+    accent: 'gold',
+    description: 'Unidades organizacionais cadastradas.',
+  },
 ] as const
 
-export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ acesso?: string }> }) {
+const accentMap = {
+  navy: { tile: 'bg-navy/8 text-navy', border: 'border-t-navy', hover: 'group-hover:text-teal' },
+  teal: { tile: 'bg-teal/8 text-teal', border: 'border-t-teal', hover: 'group-hover:text-navy' },
+  gold: { tile: 'bg-gold/10 text-gold', border: 'border-t-gold', hover: 'group-hover:text-teal' },
+} as const
+
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ acesso?: string }>
+}) {
   const { acesso } = await searchParams
   const stats = await getStats()
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Painel Geral</h1>
+      <div className="mb-8">
+        <p className="section-tag">Visão Geral</p>
+        <h1 className="section-title">Painel de Processos</h1>
+        <p className="section-subtitle">
+          Acompanhe os indicadores-chave da operação. Cada bloco abre o
+          módulo correspondente para gerenciar dados, fluxos e acessos.
+        </p>
+        <div className="gold-bar w-24 rounded-full" />
+      </div>
+
       {acesso === 'negado' && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
-          Acesso negado. Esta seção requer permissão de administrador.
+        <div className="mb-6 bg-[rgba(224,80,64,0.06)] border-l-4 border-[#E05040] text-[#9A2E1F] text-sm px-4 py-3 rounded-md">
+          <strong className="font-semibold">Acesso negado.</strong> Esta seção
+          requer permissão de administrador.
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {cards.map((card) => (
-          <Link
-            key={card.key}
-            href={card.href}
-            className="block bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
-          >
-            <div className={`inline-flex items-center justify-center w-10 h-10 rounded-lg ${card.color} text-white text-lg mb-4`}>
-              {stats[card.key]}
-            </div>
-            <p className="text-3xl font-bold text-gray-900">{stats[card.key].toLocaleString('pt-BR')}</p>
-            <p className="text-sm text-gray-500 mt-1">{card.label}</p>
-          </Link>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {cards.map((card) => {
+          const accent = accentMap[card.accent]
+          const value = stats[card.key]
+          return (
+            <Link
+              key={card.key}
+              href={card.href}
+              className={`group block bg-white rounded-lg border border-[#E2E8F0] ${accent.border} border-t-4 p-6 hover:shadow-lg hover:-translate-y-1 transition-all`}
+            >
+              <div
+                className={`w-11 h-11 rounded-lg ${accent.tile} flex items-center justify-center mb-5 font-mono font-bold text-sm`}
+              >
+                {String(value).padStart(2, '0').slice(0, 3)}
+              </div>
+              <p className="font-display text-3xl text-navy mb-1">
+                {value.toLocaleString('pt-BR')}
+              </p>
+              <p className={`text-sm font-semibold text-navy ${accent.hover} transition-colors`}>
+                {card.label}
+              </p>
+              <p className="text-xs text-gray-medium mt-1">{card.description}</p>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
