@@ -59,11 +59,11 @@ export default async function MegaProcessoDetalhe({ params }: { params: Promise<
   const proximos = proximosStatus(megaProcesso.status)
   const podeAlterar = session?.categoria === 'A' || megaProcesso.responsavelId === session?.userId
 
-  const labelMap: Record<string, string> = {
-    A: 'Alta', M: 'Média', B: 'Baixa',
+  const labelMap: Record<number, string> = {
+    1: 'Muito Baixa', 2: 'Baixa', 3: 'Média', 4: 'Alta', 5: 'Muito Alta',
   }
-  const riskColor: Record<string, string> = {
-    A: 'text-red-600', M: 'text-yellow-600', B: 'text-green-600',
+  const riskColor: Record<number, string> = {
+    1: 'text-emerald-700', 2: 'text-green-600', 3: 'text-yellow-600', 4: 'text-orange-600', 5: 'text-red-600',
   }
   return (
     <div>
@@ -245,15 +245,19 @@ export default async function MegaProcessoDetalhe({ params }: { params: Promise<
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <select name="probabilidade" className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="B">Probabilidade: Baixa</option>
-              <option value="M" selected>Probabilidade: Média</option>
-              <option value="A">Probabilidade: Alta</option>
+            <select name="probabilidade" defaultValue={3} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+              <option value={1}>Probabilidade: 1 — Muito Baixa</option>
+              <option value={2}>Probabilidade: 2 — Baixa</option>
+              <option value={3}>Probabilidade: 3 — Média</option>
+              <option value={4}>Probabilidade: 4 — Alta</option>
+              <option value={5}>Probabilidade: 5 — Muito Alta</option>
             </select>
-            <select name="impacto" className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="B">Impacto: Baixo</option>
-              <option value="M" selected>Impacto: Médio</option>
-              <option value="A">Impacto: Alto</option>
+            <select name="impacto" defaultValue={3} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+              <option value={1}>Impacto: 1 — Muito Baixo</option>
+              <option value={2}>Impacto: 2 — Baixo</option>
+              <option value={3}>Impacto: 3 — Médio</option>
+              <option value={4}>Impacto: 4 — Alto</option>
+              <option value={5}>Impacto: 5 — Muito Alto</option>
             </select>
             <input
               name="controle"

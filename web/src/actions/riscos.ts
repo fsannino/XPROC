@@ -12,8 +12,8 @@ export async function adicionarRisco(_state: unknown, formData: FormData) {
   const validated = RiscoSchema.safeParse({
     megaProcessoId: Number(formData.get('megaProcessoId')),
     descricao: formData.get('descricao'),
-    probabilidade: formData.get('probabilidade') || 'M',
-    impacto: formData.get('impacto') || 'M',
+    probabilidade: formData.get('probabilidade') ?? 3,
+    impacto: formData.get('impacto') ?? 3,
     controle: formData.get('controle') || undefined,
   })
   if (!validated.success) return { errors: validated.error.flatten().fieldErrors }

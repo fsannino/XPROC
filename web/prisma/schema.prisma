@@ -394,8 +394,8 @@ model ProcessoRisco {
   id             String       @id @default(cuid())
   megaProcessoId Int          @map("mega_processo_id")
   descricao      String       @map("risco_descricao") @db.Text
-  probabilidade  String       @default("M") @map("risco_probabilidade")
-  impacto        String       @default("M") @map("risco_impacto")
+  probabilidade  Int          @default(3) @map("risco_probabilidade")
+  impacto        Int          @default(3) @map("risco_impacto")
   controle       String?      @map("risco_controle") @db.Text
   criadoEm      DateTime     @default(now()) @map("criado_em")
 

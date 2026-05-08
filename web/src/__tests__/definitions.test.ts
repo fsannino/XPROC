@@ -80,17 +80,37 @@ describe('AlterarStatusSchema', () => {
 })
 
 describe('RiscoSchema', () => {
-  it('aceita risco válido', () => {
-    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco de fraude', probabilidade: 'A', impacto: 'M' })
+  it('aceita risco válido (escala 1..5)', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco de fraude', probabilidade: 4, impacto: 3 })
     expect(r.success).toBe(true)
   })
+  it('coage strings numéricas vindas do form', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco de fraude', probabilidade: '5', impacto: '1' })
+    expect(r.success).toBe(true)
+    if (r.success) {
+      expect(r.data.probabilidade).toBe(5)
+      expect(r.data.impacto).toBe(1)
+    }
+  })
   it('rejeita descrição muito curta', () => {
-    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'R', probabilidade: 'A', impacto: 'M' })
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'R', probabilidade: 4, impacto: 3 })
     expect(r.success).toBe(false)
   })
-  it('rejeita probabilidade inválida', () => {
-    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco X', probabilidade: 'X', impacto: 'M' })
+  it('rejeita probabilidade fora de 1..5', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco X', probabilidade: 6, impacto: 3 })
     expect(r.success).toBe(false)
+  })
+  it('rejeita impacto zero', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco Y', probabilidade: 3, impacto: 0 })
+    expect(r.success).toBe(false)
+  })
+  it('aplica defaults quando ausentes', () => {
+    const r = RiscoSchema.safeParse({ megaProcessoId: 1, descricao: 'Risco padrão' })
+    expect(r.success).toBe(true)
+    if (r.success) {
+      expect(r.data.probabilidade).toBe(3)
+      expect(r.data.impacto).toBe(3)
+    }
   })
 })
 
