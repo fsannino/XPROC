@@ -148,8 +148,8 @@ model SubProcesso {
 
   processo       Processo  @relation(fields: [processoId], references: [id])
   empresas       SubProcessoEmpresa[]
-  atividadesCarga AtividadeCarga[]
-  atividades     Atividade[]
+  atividades     AtividadeCarga[]
+  atividadesMapa Atividade[]
 
   @@map("sub_processo")
 }
