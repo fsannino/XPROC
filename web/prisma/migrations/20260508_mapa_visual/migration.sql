@@ -1,5 +1,8 @@
 -- Mapa Visual: Cadeia de Valor + Atividade + posicaoX/Y em todos os níveis
 -- Migration aditiva: zero rename, zero break em telas existentes.
+-- Atenção: as tabelas legadas usam PKs com nomes físicos prefixados
+-- (supr_cd_sub_processo, mepr_cd_mega_processo). O Prisma mapeia via @map,
+-- mas o SQL bruto precisa do nome físico nas FKs.
 
 CREATE TABLE IF NOT EXISTS "cadeia_valor" (
   "id" SERIAL PRIMARY KEY,
@@ -8,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "cadeia_valor" (
   "posicao_x" DOUBLE PRECISION NOT NULL DEFAULT 0,
   "posicao_y" DOUBLE PRECISION NOT NULL DEFAULT 0,
   "criado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "atualizado_em" TIMESTAMP(3) NOT NULL
+  "atualizado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE "mega_processo"
@@ -48,7 +51,7 @@ CREATE TABLE IF NOT EXISTS "atividade" (
   "posicao_x" DOUBLE PRECISION NOT NULL DEFAULT 0,
   "posicao_y" DOUBLE PRECISION NOT NULL DEFAULT 0,
   "criado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "atualizado_em" TIMESTAMP(3) NOT NULL
+  "atualizado_em" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 DO $$
@@ -59,7 +62,7 @@ BEGIN
   ) THEN
     ALTER TABLE "atividade"
       ADD CONSTRAINT "atividade_sub_processo_id_fkey"
-      FOREIGN KEY ("sub_processo_id") REFERENCES "sub_processo"("id")
+      FOREIGN KEY ("sub_processo_id") REFERENCES "sub_processo"("supr_cd_sub_processo")
       ON DELETE CASCADE ON UPDATE CASCADE;
   END IF;
 END $$;
