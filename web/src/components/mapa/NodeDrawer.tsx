@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { MAPA_LEVELS, type NodeType } from '@/lib/definitions'
 import MultiSelect, { type MultiSelectOption } from '@/components/ui/multi-select'
+import RaciSection, { type RaciAtribuicao, type PessoaOption } from '@/components/mapa/RaciSection'
 
 export type DrawerState =
   | { mode: 'create'; tipoFilho: NodeType | null; parentId?: number }
@@ -22,6 +23,8 @@ type Props = {
   state: DrawerState
   transacoesDisponiveis?: MultiSelectOption[]
   initialTransacaoIds?: string[] | null
+  pessoasDisponiveis?: PessoaOption[]
+  initialRaci?: RaciAtribuicao[] | null
   onClose: () => void
   onSubmit: (payload: {
     mode: 'create' | 'edit'
@@ -35,6 +38,7 @@ type Props = {
     custoEstimado?: number
     volumeMensal?: number
     transacaoIds?: string[]
+    raci?: RaciAtribuicao[]
   }) => Promise<boolean>
 }
 
@@ -42,6 +46,8 @@ export default function NodeDrawer({
   state,
   transacoesDisponiveis,
   initialTransacaoIds,
+  pessoasDisponiveis,
+  initialRaci,
   onClose,
   onSubmit,
 }: Props) {
@@ -52,6 +58,7 @@ export default function NodeDrawer({
   const usaKpis = tipo === 'processo'
   const usaTransacoes =
     state.mode === 'edit' && (tipo === 'processo' || tipo === 'atividade') && transacoesDisponiveis != null
+  const usaRaci = state.mode === 'edit' && tipo === 'processo' && pessoasDisponiveis != null
 
   const [descricao, setDescricao] = useState(state.mode === 'edit' ? state.descricao : '')
   const [abreviacao, setAbreviacao] = useState(state.mode === 'edit' ? state.abreviacao ?? '' : '')
@@ -68,6 +75,7 @@ export default function NodeDrawer({
     state.mode === 'edit' && state.volumeMensal != null ? String(state.volumeMensal) : '',
   )
   const [transacaoIds, setTransacaoIds] = useState<string[]>(initialTransacaoIds ?? [])
+  const [raci, setRaci] = useState<RaciAtribuicao[]>(initialRaci ?? [])
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -76,8 +84,12 @@ export default function NodeDrawer({
   }, [initialTransacaoIds])
 
   useEffect(() => {
+    if (initialRaci) setRaci(initialRaci)
+  }, [initialRaci])
+
+  useEffect(() => {
     setError(null)
-  }, [descricao, abreviacao, sequencia, tempoMedio, custo, volume, transacaoIds])
+  }, [descricao, abreviacao, sequencia, tempoMedio, custo, volume, transacaoIds, raci])
 
   async function handle(e: React.FormEvent) {
     e.preventDefault()
@@ -96,12 +108,14 @@ export default function NodeDrawer({
       custoEstimado: usaKpis && custo ? Number(custo) : undefined,
       volumeMensal: usaKpis && volume ? Number(volume) : undefined,
       transacaoIds: usaTransacoes ? transacaoIds : undefined,
+      raci: usaRaci ? raci : undefined,
     })
     setPending(false)
     if (!ok) setError('Não foi possível salvar.')
   }
 
   const carregandoTransacoes = usaTransacoes && initialTransacaoIds == null
+  const carregandoRaci = usaRaci && initialRaci == null
 
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
@@ -259,10 +273,18 @@ export default function NodeDrawer({
             </div>
           )}
 
-          {!usaTransacoes && !usaKpis && (
+          {usaRaci && (
+            <RaciSection
+              pessoas={pessoasDisponiveis ?? []}
+              atribuicoes={carregandoRaci ? null : raci}
+              onChange={setRaci}
+            />
+          )}
+
+          {!usaTransacoes && !usaKpis && !usaRaci && (
             <div className="bg-[rgba(247,168,35,0.08)] border-l-3 border-gold rounded-md px-3.5 py-2.5 text-xs text-slate">
-              <strong className="text-navy">Próximos passos:</strong> Áreas, Pessoas/Funções,
-              Inputs/Outputs, Produtos e Dependências serão adicionados em entregas futuras.
+              <strong className="text-navy">Próximos passos:</strong> Inputs/Outputs, Produtos e
+              Dependências serão adicionados em entregas futuras.
             </div>
           )}
 
@@ -283,7 +305,7 @@ export default function NodeDrawer({
           </button>
           <button
             type="submit"
-            disabled={pending || descricao.trim().length < 2 || carregandoTransacoes}
+            disabled={pending || descricao.trim().length < 2 || carregandoTransacoes || carregandoRaci}
             onClick={handle}
             className="px-5 py-2 rounded-md text-sm font-semibold bg-navy hover:bg-teal text-white transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >

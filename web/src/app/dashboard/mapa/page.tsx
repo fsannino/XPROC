@@ -1,16 +1,18 @@
 import { getMapa } from '@/actions/mapa'
+import { listarPessoasParaRaci } from '@/actions/raci'
 import { prisma } from '@/lib/prisma'
 import MapaCanvas from './MapaCanvas'
 
 export const metadata = { title: 'Mapa Visual' }
 
 export default async function MapaPage() {
-  const [initial, transacoes] = await Promise.all([
+  const [initial, transacoes, pessoas] = await Promise.all([
     getMapa(),
     prisma.transacao.findMany({
       orderBy: { id: 'asc' },
       select: { id: true, descricao: true },
     }),
+    listarPessoasParaRaci(),
   ])
 
   return (
@@ -34,6 +36,7 @@ export default async function MapaPage() {
             label: t.descricao || t.id,
             hint: t.id,
           }))}
+          pessoas={pessoas}
         />
       </div>
     </div>

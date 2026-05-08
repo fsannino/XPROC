@@ -8,7 +8,7 @@ import { decrypt } from '@/lib/session'
 const publicRoutes = ['/login']
 
 // Rotas que exigem categoria 'A' (admin)
-const adminRoutes = ['/dashboard/usuarios', '/dashboard/modulos']
+const adminRoutes = ['/dashboard/usuarios', '/dashboard/modulos', '/dashboard/equipe']
 
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname

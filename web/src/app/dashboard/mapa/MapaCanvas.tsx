@@ -23,15 +23,18 @@ import {
   setProcessoTransacoes,
   setAtividadeTransacoes,
 } from '@/actions/relacoes'
+import { getRaciDoProcesso, setRaciDoProcesso } from '@/actions/raci'
 import { MAPA_LEVELS, type NodeType } from '@/lib/definitions'
 import NodeDrawer, { type DrawerState } from '@/components/mapa/NodeDrawer'
 import CustomNode from '@/components/mapa/CustomNode'
 import type { MultiSelectOption } from '@/components/ui/multi-select'
+import type { RaciAtribuicao, PessoaOption } from '@/components/mapa/RaciSection'
 
 type Props = {
   initialNodes: MapaNode[]
   initialEdges: MapaEdge[]
   transacoes: MultiSelectOption[]
+  pessoas: PessoaOption[]
 }
 
 const nodeTypes = { xproc: CustomNode }
@@ -64,7 +67,7 @@ export default function MapaCanvas(props: Props) {
   )
 }
 
-function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
+function CanvasInner({ initialNodes, initialEdges, transacoes, pessoas }: Props) {
   const router = useRouter()
 
   // Mantém índice por id para o onNodeClick recuperar KPIs sem refetch
@@ -117,11 +120,13 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
   const [edges] = useState<Edge[]>(initialFlowEdges)
   const [drawer, setDrawer] = useState<DrawerState | null>(null)
   const [drawerTransacoes, setDrawerTransacoes] = useState<string[] | null>(null)
+  const [drawerRaci, setDrawerRaci] = useState<RaciAtribuicao[] | null>(null)
   const dragTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>())
 
   const openDrawerFor = useCallback((s: DrawerState) => {
     setDrawer(s)
     setDrawerTransacoes(null)
+    setDrawerRaci(null)
   }, [])
 
   const handleDelete = useCallback(async (tipo: NodeType, id: number) => {
@@ -177,14 +182,21 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
     })
     if (tipo === 'processo') {
       setDrawerTransacoes(null)
+      setDrawerRaci(null)
       try {
-        const ids = await getTransacoesDeProcesso(id)
-        setDrawerTransacoes(ids)
+        const [txIds, raci] = await Promise.all([
+          getTransacoesDeProcesso(id),
+          getRaciDoProcesso(id),
+        ])
+        setDrawerTransacoes(txIds)
+        setDrawerRaci(raci.map((a) => ({ pessoaId: a.pessoaId, papel: a.papel })))
       } catch {
         setDrawerTransacoes([])
+        setDrawerRaci([])
       }
     } else if (tipo === 'atividade') {
       setDrawerTransacoes(null)
+      setDrawerRaci(null)
       try {
         const ids = await getTransacoesDeAtividade(id)
         setDrawerTransacoes(ids)
@@ -193,6 +205,7 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
       }
     } else {
       setDrawerTransacoes(null)
+      setDrawerRaci(null)
     }
   }, [])
 
@@ -208,6 +221,7 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
     custoEstimado?: number
     volumeMensal?: number
     transacaoIds?: string[]
+    raci?: RaciAtribuicao[]
   }) => {
     const res = await upsertNode({
       tipo: payload.tipo,
@@ -233,8 +247,13 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
       }
     }
 
+    if (payload.raci && payload.id && payload.mode === 'edit' && payload.tipo === 'processo') {
+      await setRaciDoProcesso({ processoId: payload.id, atribuicoes: payload.raci })
+    }
+
     setDrawer(null)
     setDrawerTransacoes(null)
+    setDrawerRaci(null)
     router.refresh()
     return true
   }, [router])
@@ -278,9 +297,12 @@ function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
           state={drawer}
           transacoesDisponiveis={transacoes}
           initialTransacaoIds={drawerTransacoes}
+          pessoasDisponiveis={pessoas}
+          initialRaci={drawerRaci}
           onClose={() => {
             setDrawer(null)
             setDrawerTransacoes(null)
+            setDrawerRaci(null)
           }}
           onSubmit={handleSubmit}
         />
