@@ -1,5 +1,6 @@
 export const metadata = { title: 'Cenários' }
 
+import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { excluirCenario } from '@/actions/cenarios'
 import NovoCenarioForm from './form'
@@ -8,7 +9,9 @@ import { DeleteButton } from '@/components/ui/delete-button'
 export default async function CenariosPage() {
   const cenarios = await prisma.cenario.findMany({
     orderBy: { id: 'asc' },
-    include: { _count: { select: { transacoes: true } } },
+    include: {
+      _count: { select: { transacoes: true, processos: true, atividades: true } },
+    },
   })
 
   return (
@@ -26,14 +29,16 @@ export default async function CenariosPage() {
               <tr>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Descrição</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Situação</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Transações</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600">Proc.</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600">Ativ.</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600">Transaç.</th>
                 <th className="text-right px-4 py-3 font-medium text-gray-600">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {cenarios.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="text-center py-8 text-gray-400">
+                  <td colSpan={6} className="text-center py-8 text-gray-400">
                     Nenhum cenário cadastrado.
                   </td>
                 </tr>
@@ -42,8 +47,22 @@ export default async function CenariosPage() {
                 <tr key={c.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-900">{c.descricao}</td>
                   <td className="px-4 py-3 text-gray-500">{c.situacao || '—'}</td>
+                  <td className="px-4 py-3 text-center text-gray-600">{c._count.processos}</td>
+                  <td className="px-4 py-3 text-center text-gray-600">{c._count.atividades}</td>
                   <td className="px-4 py-3 text-center text-gray-600">{c._count.transacoes}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right space-x-2">
+                    <Link
+                      href={`/dashboard/cenarios/${c.id}`}
+                      className="text-blue-600 hover:text-blue-800 font-medium text-xs"
+                    >
+                      Ver
+                    </Link>
+                    <Link
+                      href={`/dashboard/cenarios/${c.id}/editar`}
+                      className="text-amber-600 hover:text-amber-800 font-medium text-xs"
+                    >
+                      Editar
+                    </Link>
                     <DeleteButton action={excluirCenario.bind(null, c.id)} confirmText={`Excluir cenário "${c.descricao}"?`} />
                   </td>
                 </tr>

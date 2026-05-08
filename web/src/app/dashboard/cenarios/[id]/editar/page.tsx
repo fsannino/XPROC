@@ -1,29 +1,27 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import TransacaoEditarForm from './form'
+import CenarioEditarForm from './form'
 
-export const metadata = { title: 'Editar Transação' }
+export const metadata = { title: 'Editar Cenário' }
 
-export default async function TransacaoEditarPage({
+export default async function CenarioEditarPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  const cenarioId = Number(id)
+  if (Number.isNaN(cenarioId)) notFound()
 
-  const [transacao, macros, processos, atividades] = await Promise.all([
-    prisma.transacao.findUnique({
-      where: { id },
+  const [cenario, processos, atividades, transacoes] = await Promise.all([
+    prisma.cenario.findUnique({
+      where: { id: cenarioId },
       include: {
-        megaProcessos: { select: { megaProcessoId: true } },
         processos: { select: { processoId: true } },
         atividades: { select: { atividadeId: true } },
+        transacoes: { select: { transacaoId: true } },
       },
-    }),
-    prisma.megaProcesso.findMany({
-      orderBy: { id: 'asc' },
-      select: { id: true, descricao: true, abreviacao: true },
     }),
     prisma.processo.findMany({
       orderBy: [{ megaProcessoId: 'asc' }, { sequencia: 'asc' }],
@@ -39,7 +37,6 @@ export default async function TransacaoEditarPage({
       select: {
         id: true,
         descricao: true,
-        sequencia: true,
         subProcesso: {
           select: {
             descricao: true,
@@ -53,28 +50,28 @@ export default async function TransacaoEditarPage({
         },
       },
     }),
+    prisma.transacao.findMany({
+      orderBy: { id: 'asc' },
+      select: { id: true, descricao: true },
+    }),
   ])
 
-  if (!transacao) notFound()
+  if (!cenario) notFound()
 
   return (
     <div className="max-w-5xl">
       <div className="mb-6">
-        <p className="section-tag">Transação</p>
-        <h1 className="section-title">{transacao.id}</h1>
-        <p className="text-sm text-gray-medium">
-          {transacao.descricao || 'Sem nome cadastrado'}
-        </p>
+        <p className="section-tag">Editar Cenário #{cenario.id}</p>
+        <h1 className="section-title">{cenario.descricao}</h1>
         <div className="gold-bar w-24 rounded-full mt-3" />
       </div>
 
-      <TransacaoEditarForm
-        transacao={{ id: transacao.id, descricao: transacao.descricao }}
-        macros={macros.map((m) => ({
-          value: String(m.id),
-          label: m.descricao,
-          hint: m.abreviacao || `#${m.id}`,
-        }))}
+      <CenarioEditarForm
+        cenario={{
+          id: cenario.id,
+          descricao: cenario.descricao,
+          situacao: cenario.situacao,
+        }}
         processos={processos.map((p) => ({
           value: String(p.id),
           label: p.descricao,
@@ -85,17 +82,25 @@ export default async function TransacaoEditarPage({
           label: a.descricao,
           hint: `${a.subProcesso.processo.megaProcesso.abreviacao ?? ''} › ${a.subProcesso.processo.descricao} › ${a.subProcesso.descricao}`,
         }))}
-        initialMacroIds={transacao.megaProcessos.map((r) => String(r.megaProcessoId))}
-        initialProcessoIds={transacao.processos.map((r) => String(r.processoId))}
-        initialAtividadeIds={transacao.atividades.map((r) => String(r.atividadeId))}
+        transacoes={transacoes.map((t) => ({
+          value: t.id,
+          label: t.descricao || t.id,
+          hint: t.id,
+        }))}
+        initialProcessoIds={cenario.processos.map((r) => String(r.processoId))}
+        initialAtividadeIds={cenario.atividades.map((r) => String(r.atividadeId))}
+        initialTransacaoIds={cenario.transacoes.map((r) => r.transacaoId)}
       />
 
-      <div className="mt-8">
+      <div className="mt-8 flex gap-4">
         <Link
-          href="/dashboard/transacoes"
+          href={`/dashboard/cenarios/${cenario.id}`}
           className="text-sm text-teal hover:text-navy font-semibold"
         >
-          ← Voltar para a lista
+          ← Visualizar cenário
+        </Link>
+        <Link href="/dashboard/cenarios" className="text-sm text-teal hover:text-navy font-semibold">
+          Lista de cenários
         </Link>
       </div>
     </div>

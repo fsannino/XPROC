@@ -65,9 +65,7 @@ model UsuarioPerfil {
   @@map("usuario_perfil")
 }
 
-// ─── Cadeia de Valor (acima do Macroprocesso) ────────────────────
-// Mapa visual: Cadeia de Valor → Macroprocesso (=MegaProcesso) →
-// Processo → Macroatividade (=SubProcesso) → Atividade.
+// ─── Cadeia de Valor ──────────────────────────────────────────────
 
 model CadeiaValor {
   id           Int       @id @default(autoincrement())
@@ -130,6 +128,8 @@ model Processo {
 
   megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id])
   subProcessos   SubProcesso[]
+  transacoes     TransacaoProcesso[]
+  cenarios       CenarioProcesso[]
 
   @@map("processo")
 }
@@ -165,6 +165,8 @@ model Atividade {
   atualizadoEm  DateTime     @updatedAt @map("atualizado_em")
 
   subProcesso   SubProcesso  @relation(fields: [subProcessoId], references: [id], onDelete: Cascade)
+  transacoes    TransacaoAtividade[]
+  cenarios      CenarioAtividade[]
 
   @@index([subProcessoId])
   @@map("atividade")
@@ -176,9 +178,11 @@ model Transacao {
   criadoEm    DateTime @default(now()) @map("criado_em")
   atualizadoEm DateTime @updatedAt @map("atualizado_em")
 
-  megaProcessos TransacaoMega[]
-  atividades    AtividadeCarga[]
-  cenarios      CenarioTransacao[]
+  megaProcessos    TransacaoMega[]
+  atividadesCarga  AtividadeCarga[]
+  cenarios         CenarioTransacao[]
+  processos        TransacaoProcesso[]
+  atividades       TransacaoAtividade[]
 
   @@map("transacao")
 }
@@ -188,11 +192,37 @@ model TransacaoMega {
   megaProcessoId Int          @map("mega_processo_id")
   criadoEm     DateTime     @default(now()) @map("criado_em")
 
-  transacao      Transacao    @relation(fields: [transacaoId], references: [id])
-  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id])
+  transacao      Transacao    @relation(fields: [transacaoId], references: [id], onDelete: Cascade)
+  megaProcesso   MegaProcesso @relation(fields: [megaProcessoId], references: [id], onDelete: Cascade)
 
   @@id([transacaoId, megaProcessoId])
   @@map("transacao_mega")
+}
+
+model TransacaoProcesso {
+  transacaoId String    @map("transacao_id")
+  processoId  Int       @map("processo_id")
+  criadoEm    DateTime  @default(now()) @map("criado_em")
+
+  transacao   Transacao @relation(fields: [transacaoId], references: [id], onDelete: Cascade)
+  processo    Processo  @relation(fields: [processoId], references: [id], onDelete: Cascade)
+
+  @@id([transacaoId, processoId])
+  @@index([processoId])
+  @@map("transacao_processo")
+}
+
+model TransacaoAtividade {
+  transacaoId String    @map("transacao_id")
+  atividadeId Int       @map("atividade_id")
+  criadoEm    DateTime  @default(now()) @map("criado_em")
+
+  transacao   Transacao @relation(fields: [transacaoId], references: [id], onDelete: Cascade)
+  atividade   Atividade @relation(fields: [atividadeId], references: [id], onDelete: Cascade)
+
+  @@id([transacaoId, atividadeId])
+  @@index([atividadeId])
+  @@map("transacao_atividade")
 }
 
 // ─── Módulos ──────────────────────────────────────────────────────
@@ -273,6 +303,8 @@ model Cenario {
   atualizadoEm DateTime  @updatedAt @map("atualizado_em")
 
   transacoes   CenarioTransacao[]
+  processos    CenarioProcesso[]
+  atividades   CenarioAtividade[]
 
   @@map("cenario")
 }
@@ -282,11 +314,37 @@ model CenarioTransacao {
   transacaoId String    @map("transacao_id")
   criadoEm   DateTime  @default(now()) @map("criado_em")
 
-  cenario     Cenario   @relation(fields: [cenarioId], references: [id])
-  transacao   Transacao @relation(fields: [transacaoId], references: [id])
+  cenario     Cenario   @relation(fields: [cenarioId], references: [id], onDelete: Cascade)
+  transacao   Transacao @relation(fields: [transacaoId], references: [id], onDelete: Cascade)
 
   @@id([cenarioId, transacaoId])
   @@map("cenario_transacao")
+}
+
+model CenarioProcesso {
+  cenarioId  Int      @map("cenario_id")
+  processoId Int      @map("processo_id")
+  criadoEm   DateTime @default(now()) @map("criado_em")
+
+  cenario    Cenario  @relation(fields: [cenarioId], references: [id], onDelete: Cascade)
+  processo   Processo @relation(fields: [processoId], references: [id], onDelete: Cascade)
+
+  @@id([cenarioId, processoId])
+  @@index([processoId])
+  @@map("cenario_processo")
+}
+
+model CenarioAtividade {
+  cenarioId   Int       @map("cenario_id")
+  atividadeId Int       @map("atividade_id")
+  criadoEm    DateTime  @default(now()) @map("criado_em")
+
+  cenario     Cenario   @relation(fields: [cenarioId], references: [id], onDelete: Cascade)
+  atividade   Atividade @relation(fields: [atividadeId], references: [id], onDelete: Cascade)
+
+  @@id([cenarioId, atividadeId])
+  @@index([atividadeId])
+  @@map("cenario_atividade")
 }
 
 // ─── BPM: Ciclo de Vida, Comentários, Riscos ─────────────────────
