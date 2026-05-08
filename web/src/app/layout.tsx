@@ -24,7 +24,7 @@ const mono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: { default: 'XPROC — Gestão de Processos Corporativos', template: '%s — XPROC' },
+  title: { default: 'Collab:Flow — Gestão de Processos Corporativos', template: '%s — Collab:Flow' },
   description: 'Sistema de Gerenciamento de Processos Corporativos.',
   themeColor: '#0B3D5C',
 }

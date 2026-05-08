@@ -3,7 +3,7 @@ import { excluirModulo, excluirSubModulo, criarModulo, criarSubModulo } from '@/
 import { DeleteButton } from '@/components/ui/delete-button'
 import ModulosForm from './form'
 
-export const metadata = { title: 'Módulos — XPROC' }
+export const metadata = { title: 'Módulos — Collab:Flow' }
 
 export default async function ModulosPage() {
   const [modulos, subModulosSemModulo] = await Promise.all([

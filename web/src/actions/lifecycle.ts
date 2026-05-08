@@ -62,7 +62,7 @@ export async function alterarStatus(megaProcessoId: number, novoStatus: string) 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
     await enviarEmail({
       para: mp.responsavel.email,
-      assunto: `[XPROC] Status alterado: ${mp.descricao}`,
+      assunto: `[Collab:Flow] Status alterado: ${mp.descricao}`,
       html: htmlMudancaStatus(
         mp.descricao,
         statusAnterior,

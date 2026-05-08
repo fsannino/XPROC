@@ -1,6 +1,8 @@
-# XPROC — Sistema de Gerenciamento de Processos Corporativos
+# Collab:Flow (ex-XPROC) — Sistema de Gerenciamento de Processos Corporativos
 
-Sistema legado de BPM (Business Process Management) desenvolvido em ASP Clássico/VBScript com SQL Server.
+Produto **Collab:Flow** da suite **Collab:Engine** da collab:Z. Originalmente conhecido como **XPROC**, o nome legado segue presente no repositório, banco de dados e código por compatibilidade.
+
+Sistema legado de BPM (Business Process Management) desenvolvido em ASP Clássico/VBScript com SQL Server, em modernização para Next.js + TypeScript + Prisma + PostgreSQL.
 
 ## Stack Legada
 - **Backend:** ASP Clássico (VBScript) / IIS
