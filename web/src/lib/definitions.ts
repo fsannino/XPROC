@@ -88,7 +88,7 @@ export const KpiSchema = z.object({
   volumeMensal: z.number().int().positive().optional(),
 })
 
-// ─── Mapa Visual ──────────────────────────────────────────────────
+// ─── Mapa Visual ───────────────────────────────────────────────────
 
 export const NODE_TYPES = [
   'cadeia',
@@ -130,3 +130,46 @@ export const NodePositionSchema = z.object({
 export type FormState<T = Record<string, string[]>> =
   | { errors?: Partial<Record<keyof T, string[]>>; message?: string }
   | undefined
+
+// ─── RACI ──────────────────────────────────────────────────────────
+
+export const AreaSchema = z.object({
+  codigo: z.string().min(1).max(20).trim(),
+  descricao: z.string().min(2).max(150).trim(),
+  parentId: z.number().int().positive().optional().nullable(),
+})
+
+export const FuncaoSchema = z.object({
+  codigo: z.string().min(1).max(20).trim(),
+  descricao: z.string().min(2).max(150).trim(),
+  areaId: z.number().int().positive().optional().nullable(),
+})
+
+export const PessoaSchema = z.object({
+  codigo: z.string().min(1).max(20).trim(),
+  nome: z.string().min(2).max(150).trim(),
+  email: z.string().email({ message: 'Email inválido.' }).optional().or(z.literal('')),
+  areaId: z.number().int().positive().optional().nullable(),
+  funcaoId: z.number().int().positive().optional().nullable(),
+  usuarioId: z.string().optional().nullable(),
+})
+
+export const RACI_PAPEIS = ['R', 'A', 'C', 'I'] as const
+export type RaciPapel = typeof RACI_PAPEIS[number]
+
+export const RACI_PAPEL_LABEL: Record<RaciPapel, string> = {
+  R: 'Responsável',
+  A: 'Aprovador',
+  C: 'Consultado',
+  I: 'Informado',
+}
+
+export const RaciAtribuicaoSchema = z.object({
+  pessoaId: z.number().int().positive(),
+  papel: z.enum(RACI_PAPEIS),
+})
+
+export const SetRaciDoProcessoSchema = z.object({
+  processoId: z.number().int().positive(),
+  atribuicoes: z.array(RaciAtribuicaoSchema),
+})

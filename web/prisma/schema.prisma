@@ -6,7 +6,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Autenticação ─────────────────────────────────────────────────
+// ─── Autenticação ───────────────────────────────────────────
 
 model Usuario {
   id            String    @id @default(cuid())
@@ -26,6 +26,7 @@ model Usuario {
   comentarios          ProcessoComentario[]  @relation("ComentarioAutor")
   versoesCriadas       MegaProcessoVersao[]  @relation("VersaoAutor")
   megaProcessosResp    MegaProcesso[]        @relation("MegaProcessoResponsavel")
+  pessoa               Pessoa?
 
   @@map("usuario")
 }
@@ -65,7 +66,7 @@ model UsuarioPerfil {
   @@map("usuario_perfil")
 }
 
-// ─── Cadeia de Valor ──────────────────────────────────────────────
+// ─── Cadeia de Valor ─────────────────────────────────────────────
 
 model CadeiaValor {
   id           Int       @id @default(autoincrement())
@@ -81,7 +82,7 @@ model CadeiaValor {
   @@map("cadeia_valor")
 }
 
-// ─── Hierarquia de Processos ──────────────────────────────────────
+// ─── Hierarquia de Processos ─────────────────────────────────────
 
 model MegaProcesso {
   id              Int      @id @default(autoincrement()) @map("mepr_cd_mega_processo")
@@ -130,6 +131,7 @@ model Processo {
   subProcessos   SubProcesso[]
   transacoes     TransacaoProcesso[]
   cenarios       CenarioProcesso[]
+  raciAtribuicoes RaciAtribuicao[]
 
   @@map("processo")
 }
@@ -225,7 +227,7 @@ model TransacaoAtividade {
   @@map("transacao_atividade")
 }
 
-// ─── Módulos ──────────────────────────────────────────────────────
+// ─── Módulos ──────────────────────────────────────────────────────────────
 
 model Modulo {
   id           Int       @id @default(autoincrement()) @map("modu_cd_modulo")
@@ -276,7 +278,7 @@ model SubProcessoEmpresa {
   @@map("sub_processo_empresa")
 }
 
-// ─── Atividades de carga (legado) ─────────────────────────────────
+// ─── Atividades de carga (legado) ───────────────────────────────────
 
 model AtividadeCarga {
   id            Int         @id @default(autoincrement()) @map("atca_cd_atividade_carga")
@@ -293,7 +295,7 @@ model AtividadeCarga {
   @@map("atividade_carga")
 }
 
-// ─── Cenários ─────────────────────────────────────────────────────
+// ─── Cenários ──────────────────────────────────────────────────────────────
 
 model Cenario {
   id           Int       @id @default(autoincrement()) @map("cena_cd_cenario")
@@ -347,7 +349,7 @@ model CenarioAtividade {
   @@map("cenario_atividade")
 }
 
-// ─── BPM: Ciclo de Vida, Comentários, Riscos ─────────────────────
+// ─── BPM: Ciclo de Vida, Comentários, Riscos ──────────────────────
 
 model ProcessoComentario {
   id             String       @id @default(cuid())
@@ -394,7 +396,7 @@ model ProcessoRisco {
   @@map("processo_risco")
 }
 
-// ─── Auditoria ────────────────────────────────────────────────────
+// ─── Auditoria ─────────────────────────────────────────────────────────
 
 model UsuarioMapeamento {
   id             String       @id @default(cuid())
@@ -419,4 +421,76 @@ model UsuarioHistorico {
   usuario    Usuario  @relation(fields: [usuarioId], references: [id])
 
   @@map("usuario_historico")
+}
+
+// ─── RACI: Áreas, Funções, Pessoas ────────────────────────────────
+
+model Area {
+  id           Int       @id @default(autoincrement())
+  codigo       String    @unique
+  descricao    String
+  parentId     Int?      @map("parent_id")
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  parent       Area?     @relation("AreaHierarquia", fields: [parentId], references: [id], onDelete: SetNull)
+  filhas       Area[]    @relation("AreaHierarquia")
+  funcoes      Funcao[]
+  pessoas      Pessoa[]
+
+  @@index([parentId])
+  @@map("area")
+}
+
+model Funcao {
+  id           Int       @id @default(autoincrement())
+  codigo       String    @unique
+  descricao    String
+  areaId       Int?      @map("area_id")
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  area         Area?     @relation(fields: [areaId], references: [id], onDelete: SetNull)
+  pessoas      Pessoa[]
+
+  @@index([areaId])
+  @@map("funcao")
+}
+
+model Pessoa {
+  id           Int       @id @default(autoincrement())
+  codigo       String    @unique
+  nome         String
+  email        String?   @unique
+  areaId       Int?      @map("area_id")
+  funcaoId     Int?      @map("funcao_id")
+  usuarioId    String?   @unique @map("usuario_id")
+  ativo        Boolean   @default(true)
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+  atualizadoEm DateTime  @updatedAt @map("atualizado_em")
+
+  area         Area?     @relation(fields: [areaId], references: [id], onDelete: SetNull)
+  funcao       Funcao?   @relation(fields: [funcaoId], references: [id], onDelete: SetNull)
+  usuario      Usuario?  @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  raciAtribuicoes RaciAtribuicao[]
+
+  @@index([areaId])
+  @@index([funcaoId])
+  @@map("pessoa")
+}
+
+model RaciAtribuicao {
+  id           String    @id @default(cuid())
+  processoId   Int       @map("processo_id")
+  pessoaId     Int       @map("pessoa_id")
+  papel        String    // R | A | C | I
+  criadoEm     DateTime  @default(now()) @map("criado_em")
+
+  processo     Processo  @relation(fields: [processoId], references: [id], onDelete: Cascade)
+  pessoa       Pessoa    @relation(fields: [pessoaId], references: [id], onDelete: Cascade)
+
+  @@unique([processoId, pessoaId, papel])
+  @@index([processoId])
+  @@index([pessoaId])
+  @@map("raci_atribuicao")
 }
