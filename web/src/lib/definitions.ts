@@ -173,3 +173,108 @@ export const SetRaciDoProcessoSchema = z.object({
   processoId: z.number().int().positive(),
   atribuicoes: z.array(RaciAtribuicaoSchema),
 })
+
+// ─── Atributos do Mapa: Produtos / Insumos / Sistemas / Dependencias ──
+
+export const PRODUTO_TIPOS = ['BEM', 'SERVICO', 'INFORMACAO'] as const
+export type ProdutoTipo = typeof PRODUTO_TIPOS[number]
+
+export const PRODUTO_TIPO_LABEL: Record<ProdutoTipo, string> = {
+  BEM: 'Bem',
+  SERVICO: 'Serviço',
+  INFORMACAO: 'Informação',
+}
+
+export const ProdutoSchema = z.object({
+  codigo: z.string().min(1).max(20).trim(),
+  descricao: z.string().min(2).max(150).trim(),
+  tipo: z.enum(PRODUTO_TIPOS).default('BEM'),
+})
+
+export const SetProdutosDoProcessoSchema = z.object({
+  processoId: z.number().int().positive(),
+  produtoIds: z.array(z.number().int().positive()),
+})
+
+export const INSUMO_TIPOS = ['DADO', 'DOCUMENTO', 'MATERIAL', 'SERVICO'] as const
+export type InsumoTipo = typeof INSUMO_TIPOS[number]
+
+export const INSUMO_TIPO_LABEL: Record<InsumoTipo, string> = {
+  DADO: 'Dado',
+  DOCUMENTO: 'Documento',
+  MATERIAL: 'Material',
+  SERVICO: 'Serviço',
+}
+
+export const INSUMO_DIRECOES = ['INPUT', 'OUTPUT'] as const
+export type InsumoDirecao = typeof INSUMO_DIRECOES[number]
+
+export const InsumoSchema = z.object({
+  codigo: z.string().min(1).max(20).trim(),
+  descricao: z.string().min(2).max(150).trim(),
+  tipo: z.enum(INSUMO_TIPOS).default('DADO'),
+})
+
+export const InsumoVinculoSchema = z.object({
+  insumoId: z.number().int().positive(),
+  direcao: z.enum(INSUMO_DIRECOES),
+})
+
+export const SetInsumosDeProcessoSchema = z.object({
+  processoId: z.number().int().positive(),
+  vinculos: z.array(InsumoVinculoSchema),
+})
+
+export const SetInsumosDeAtividadeSchema = z.object({
+  atividadeId: z.number().int().positive(),
+  vinculos: z.array(InsumoVinculoSchema),
+})
+
+export const SISTEMA_TIPOS = ['ERP', 'CRM', 'BI', 'RPA', 'OUTRO'] as const
+export type SistemaTipo = typeof SISTEMA_TIPOS[number]
+
+export const SistemaSchema = z.object({
+  codigo: z.string().min(1).max(20).trim(),
+  nome: z.string().min(2).max(150).trim(),
+  tipo: z.enum(SISTEMA_TIPOS).default('OUTRO'),
+})
+
+export const SISTEMA_PAPEIS = ['CONSUMIDOR', 'PRODUTOR', 'AMBOS'] as const
+export type SistemaPapel = typeof SISTEMA_PAPEIS[number]
+
+export const SISTEMA_PAPEL_LABEL: Record<SistemaPapel, string> = {
+  CONSUMIDOR: 'Consumidor',
+  PRODUTOR: 'Produtor',
+  AMBOS: 'Ambos',
+}
+
+export const SistemaVinculoSchema = z.object({
+  sistemaId: z.number().int().positive(),
+  papel: z.enum(SISTEMA_PAPEIS),
+})
+
+export const SetSistemasDoProcessoSchema = z.object({
+  processoId: z.number().int().positive(),
+  vinculos: z.array(SistemaVinculoSchema),
+})
+
+export const DEPENDENCIA_TIPOS = ['PRECEDE', 'REQUER', 'COMPARTILHA'] as const
+export type DependenciaTipo = typeof DEPENDENCIA_TIPOS[number]
+
+export const DEPENDENCIA_TIPO_LABEL: Record<DependenciaTipo, string> = {
+  PRECEDE: 'Precede',
+  REQUER: 'Requer',
+  COMPARTILHA: 'Compartilha',
+}
+
+export const DependenciaSchema = z
+  .object({
+    origemId: z.number().int().positive(),
+    destinoId: z.number().int().positive(),
+    tipo: z.enum(DEPENDENCIA_TIPOS).default('PRECEDE'),
+    descricao: z.string().max(300).optional().or(z.literal('')),
+  })
+  .refine((d) => d.origemId !== d.destinoId, {
+    message: 'Origem e destino devem ser diferentes.',
+    path: ['destinoId'],
+  })

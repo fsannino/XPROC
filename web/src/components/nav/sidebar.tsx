@@ -13,6 +13,7 @@ const navItems = [
   { href: '/dashboard/cenarios', label: 'Cenários', icon: '◎' },
   { href: '/dashboard/empresas', label: 'Empresas', icon: '◐' },
   { href: '/dashboard/equipe', label: 'Equipe', icon: '◓' },
+  { href: '/dashboard/catalogo', label: 'Catálogo', icon: '◔' },
   { href: '/dashboard/modulos', label: 'Módulos', icon: '◑' },
   { href: '/dashboard/usuarios', label: 'Usuários', icon: '◒' },
 ]
