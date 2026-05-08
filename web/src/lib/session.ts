@@ -3,9 +3,21 @@ import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
-const key = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || 'fallback-dev-secret-change-in-production'
-)
+// Fail-fast: token forjável é pior que build quebrado.
+// NEXTAUTH_SECRET precisa estar definido em todos os ambientes (inclusive testes).
+const secret = process.env.NEXTAUTH_SECRET
+if (!secret) {
+  throw new Error(
+    'NEXTAUTH_SECRET não está definido. Gere com: openssl rand -base64 64'
+  )
+}
+if (secret.length < 32) {
+  throw new Error(
+    `NEXTAUTH_SECRET tem apenas ${secret.length} chars; mínimo 32. Gere com: openssl rand -base64 64`
+  )
+}
+
+const key = new TextEncoder().encode(secret)
 
 export type SessionPayload = {
   userId: string
