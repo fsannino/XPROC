@@ -17,18 +17,25 @@ import {
 import '@xyflow/react/dist/style.css'
 import type { MapaNode, MapaEdge } from '@/actions/mapa'
 import { upsertNode, updateNodePosition, deleteNode } from '@/actions/mapa'
+import {
+  getTransacoesDeProcesso,
+  getTransacoesDeAtividade,
+  setProcessoTransacoes,
+  setAtividadeTransacoes,
+} from '@/actions/relacoes'
 import { MAPA_LEVELS, type NodeType } from '@/lib/definitions'
 import NodeDrawer, { type DrawerState } from '@/components/mapa/NodeDrawer'
 import CustomNode from '@/components/mapa/CustomNode'
+import type { MultiSelectOption } from '@/components/ui/multi-select'
 
 type Props = {
   initialNodes: MapaNode[]
   initialEdges: MapaEdge[]
+  transacoes: MultiSelectOption[]
 }
 
 const nodeTypes = { xproc: CustomNode }
 
-/** Layout inicial automático para nós em (0,0): grade por tipo. */
 function autoLayout(node: MapaNode, index: number): { x: number; y: number } {
   if (node.posicaoX !== 0 || node.posicaoY !== 0) {
     return { x: node.posicaoX, y: node.posicaoY }
@@ -57,7 +64,7 @@ export default function MapaCanvas(props: Props) {
   )
 }
 
-function CanvasInner({ initialNodes, initialEdges }: Props) {
+function CanvasInner({ initialNodes, initialEdges, transacoes }: Props) {
   const router = useRouter()
 
   const grouped = useMemo(() => {
@@ -99,9 +106,13 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
   const [nodes, setNodes] = useState<Node[]>(grouped)
   const [edges] = useState<Edge[]>(initialFlowEdges)
   const [drawer, setDrawer] = useState<DrawerState | null>(null)
+  const [drawerTransacoes, setDrawerTransacoes] = useState<string[] | null>(null)
   const dragTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>())
 
-  const openDrawerFor = useCallback((s: DrawerState) => setDrawer(s), [])
+  const openDrawerFor = useCallback((s: DrawerState) => {
+    setDrawer(s)
+    setDrawerTransacoes(null)
+  }, [])
 
   const handleDelete = useCallback(async (tipo: NodeType, id: number) => {
     if (!confirm(`Excluir ${MAPA_LEVELS[tipo].label.toLowerCase()}?`)) return
@@ -116,7 +127,6 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
 
   const onNodesChange: OnNodesChange = useCallback((changes: NodeChange[]) => {
     setNodes((ns) => applyNodeChanges(changes, ns))
-    // Persistir posições com debounce por nó
     for (const ch of changes) {
       if (ch.type !== 'position' || !ch.position || ch.dragging) continue
       const { tipo, id } = parseKey(ch.id)
@@ -134,7 +144,7 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
     }
   }, [])
 
-  const onNodeClick = useCallback((_: React.MouseEvent, n: Node) => {
+  const onNodeClick = useCallback(async (_: React.MouseEvent, n: Node) => {
     const { tipo, id } = parseKey(n.id)
     const data = n.data as { label: string; abreviacao?: string | null; sequencia?: number | null }
     setDrawer({
@@ -145,6 +155,26 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
       abreviacao: data.abreviacao ?? '',
       sequencia: data.sequencia ?? undefined,
     })
+    // Para Processo/Atividade, busca transações vinculadas em segundo plano
+    if (tipo === 'processo') {
+      setDrawerTransacoes(null)
+      try {
+        const ids = await getTransacoesDeProcesso(id)
+        setDrawerTransacoes(ids)
+      } catch {
+        setDrawerTransacoes([])
+      }
+    } else if (tipo === 'atividade') {
+      setDrawerTransacoes(null)
+      try {
+        const ids = await getTransacoesDeAtividade(id)
+        setDrawerTransacoes(ids)
+      } catch {
+        setDrawerTransacoes([])
+      }
+    } else {
+      setDrawerTransacoes(null)
+    }
   }, [])
 
   const handleSubmit = useCallback(async (payload: {
@@ -155,21 +185,37 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
     descricao: string
     abreviacao?: string
     sequencia?: number
+    transacaoIds?: string[]
   }) => {
-    const res = await upsertNode(payload)
+    const res = await upsertNode({
+      mode: payload.mode,
+      tipo: payload.tipo,
+      id: payload.id,
+      parentId: payload.parentId,
+      descricao: payload.descricao,
+      abreviacao: payload.abreviacao,
+      sequencia: payload.sequencia,
+    } as Parameters<typeof upsertNode>[0])
     if (!res?.success) {
       alert(res?.error ?? 'Falha ao salvar.')
       return false
     }
+
+    // Sincroniza transações se aplicável
+    if (payload.transacaoIds && payload.id && payload.mode === 'edit') {
+      if (payload.tipo === 'processo') {
+        await setProcessoTransacoes({ processoId: payload.id, transacaoIds: payload.transacaoIds })
+      } else if (payload.tipo === 'atividade') {
+        await setAtividadeTransacoes({ atividadeId: payload.id, transacaoIds: payload.transacaoIds })
+      }
+    }
+
     setDrawer(null)
-    // router.refresh() invalida o Router Cache do Next, então quando o
-    // usuário navegar para /processos, /transacoes, etc., os dados serão
-    // re-buscados do banco (com revalidatePath em layout no server action).
+    setDrawerTransacoes(null)
     router.refresh()
     return true
   }, [router])
 
-  // Fechar timers ao desmontar
   useEffect(() => {
     const map = dragTimers.current
     return () => map.forEach((t) => clearTimeout(t))
@@ -196,7 +242,7 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
       </ReactFlow>
 
       <button
-        onClick={() => setDrawer({ mode: 'create', tipoFilho: 'cadeia' })}
+        onClick={() => openDrawerFor({ mode: 'create', tipoFilho: 'cadeia' })}
         className="absolute top-4 left-4 bg-navy hover:bg-teal text-white text-sm font-semibold px-4 py-2 rounded-md shadow-md transition-all hover:-translate-y-0.5"
       >
         + Cadeia de Valor
@@ -205,7 +251,12 @@ function CanvasInner({ initialNodes, initialEdges }: Props) {
       {drawer && (
         <NodeDrawer
           state={drawer}
-          onClose={() => setDrawer(null)}
+          transacoesDisponiveis={transacoes}
+          initialTransacaoIds={drawerTransacoes}
+          onClose={() => {
+            setDrawer(null)
+            setDrawerTransacoes(null)
+          }}
           onSubmit={handleSubmit}
         />
       )}

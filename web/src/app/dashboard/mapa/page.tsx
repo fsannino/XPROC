@@ -1,10 +1,17 @@
 import { getMapa } from '@/actions/mapa'
+import { prisma } from '@/lib/prisma'
 import MapaCanvas from './MapaCanvas'
 
 export const metadata = { title: 'Mapa Visual' }
 
 export default async function MapaPage() {
-  const initial = await getMapa()
+  const [initial, transacoes] = await Promise.all([
+    getMapa(),
+    prisma.transacao.findMany({
+      orderBy: { id: 'asc' },
+      select: { id: true, descricao: true },
+    }),
+  ])
 
   return (
     <div className="flex flex-col h-[calc(100vh-7rem)]">
@@ -19,7 +26,15 @@ export default async function MapaPage() {
       </div>
 
       <div className="flex-1 rounded-lg border border-[#E2E8F0] bg-white overflow-hidden">
-        <MapaCanvas initialNodes={initial.nodes} initialEdges={initial.edges} />
+        <MapaCanvas
+          initialNodes={initial.nodes}
+          initialEdges={initial.edges}
+          transacoes={transacoes.map((t) => ({
+            value: t.id,
+            label: t.descricao || t.id,
+            hint: t.id,
+          }))}
+        />
       </div>
     </div>
   )
