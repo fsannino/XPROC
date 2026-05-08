@@ -4,6 +4,11 @@ import { getSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
+// Garante que toda página dentro de /dashboard busca dados frescos do banco
+// em cada navegação, sem usar Router Cache do Next 16. Sem isto, dados
+// criados no Mapa podem não aparecer imediatamente em /processos etc.
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession()
   if (!session) redirect('/login')
