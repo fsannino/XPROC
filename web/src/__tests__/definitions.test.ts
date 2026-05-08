@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   LoginSchema, UsuarioSchema, MegaProcessoSchema, CenarioSchema, TrocaSenhaSchema,
   AlterarStatusSchema, RiscoSchema, ComentarioSchema,
+  AreaSchema, FuncaoSchema, PessoaSchema, RaciAtribuicaoSchema, SetRaciDoProcessoSchema,
 } from '@/lib/definitions'
 
 describe('LoginSchema', () => {
@@ -101,5 +102,80 @@ describe('ComentarioSchema', () => {
   it('rejeita texto vazio', () => {
     const r = ComentarioSchema.safeParse({ megaProcessoId: 1, texto: '' })
     expect(r.success).toBe(false)
+  })
+})
+
+describe('AreaSchema', () => {
+  it('aceita área válida sem parent', () => {
+    const r = AreaSchema.safeParse({ codigo: 'FIN', descricao: 'Financeiro' })
+    expect(r.success).toBe(true)
+  })
+  it('aceita área com parent', () => {
+    const r = AreaSchema.safeParse({ codigo: 'FIN-CB', descricao: 'Contas a Receber', parentId: 5 })
+    expect(r.success).toBe(true)
+  })
+  it('rejeita código vazio', () => {
+    const r = AreaSchema.safeParse({ codigo: '', descricao: 'X' })
+    expect(r.success).toBe(false)
+  })
+})
+
+describe('FuncaoSchema', () => {
+  it('aceita função vinculada a área', () => {
+    const r = FuncaoSchema.safeParse({ codigo: 'GER-FIN', descricao: 'Gerente Financeiro', areaId: 1 })
+    expect(r.success).toBe(true)
+  })
+  it('aceita função sem área', () => {
+    const r = FuncaoSchema.safeParse({ codigo: 'CEO', descricao: 'Diretor Executivo' })
+    expect(r.success).toBe(true)
+  })
+  it('rejeita descrição muito curta', () => {
+    const r = FuncaoSchema.safeParse({ codigo: 'X', descricao: 'A' })
+    expect(r.success).toBe(false)
+  })
+})
+
+describe('PessoaSchema', () => {
+  it('aceita pessoa completa', () => {
+    const r = PessoaSchema.safeParse({
+      codigo: 'JS', nome: 'João Silva', email: 'joao@x.com', areaId: 1, funcaoId: 2,
+    })
+    expect(r.success).toBe(true)
+  })
+  it('aceita pessoa sem email', () => {
+    const r = PessoaSchema.safeParse({ codigo: 'X', nome: 'Maria' })
+    expect(r.success).toBe(true)
+  })
+  it('rejeita email inválido', () => {
+    const r = PessoaSchema.safeParse({ codigo: 'X', nome: 'Maria', email: 'nao-email' })
+    expect(r.success).toBe(false)
+  })
+})
+
+describe('RaciAtribuicaoSchema', () => {
+  it.each([['R'], ['A'], ['C'], ['I']])('aceita papel %s', (papel) => {
+    const r = RaciAtribuicaoSchema.safeParse({ pessoaId: 1, papel })
+    expect(r.success).toBe(true)
+  })
+  it('rejeita papel inválido', () => {
+    const r = RaciAtribuicaoSchema.safeParse({ pessoaId: 1, papel: 'X' })
+    expect(r.success).toBe(false)
+  })
+})
+
+describe('SetRaciDoProcessoSchema', () => {
+  it('aceita lista vazia (limpar atribuições)', () => {
+    const r = SetRaciDoProcessoSchema.safeParse({ processoId: 1, atribuicoes: [] })
+    expect(r.success).toBe(true)
+  })
+  it('aceita múltiplas atribuições', () => {
+    const r = SetRaciDoProcessoSchema.safeParse({
+      processoId: 1,
+      atribuicoes: [
+        { pessoaId: 10, papel: 'R' },
+        { pessoaId: 11, papel: 'A' },
+      ],
+    })
+    expect(r.success).toBe(true)
   })
 })

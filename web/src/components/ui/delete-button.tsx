@@ -3,7 +3,7 @@
 import { useTransition } from 'react'
 
 interface DeleteButtonProps {
-  action: () => Promise<void>
+  action: () => Promise<unknown>
   label?: string
   confirmText?: string
 }
@@ -13,7 +13,9 @@ export function DeleteButton({ action, label = 'Excluir', confirmText = 'Confirm
 
   function handleClick() {
     if (!confirm(confirmText)) return
-    startTransition(() => action())
+    startTransition(async () => {
+      await action()
+    })
   }
 
   return (
