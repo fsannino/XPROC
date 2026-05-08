@@ -25,6 +25,11 @@ export type MapaEdge = {
   target: string
 }
 
+/** Invalida todas as telas que mostram dados criados/editados via mapa. */
+function revalidateAll() {
+  revalidatePath('/dashboard', 'layout')
+}
+
 /**
  * Carrega todos os nós e arestas (pai→filho) da cadeia de valor.
  * Edges derivam das FKs (cadeiaValorId, megaProcessoId, processoId, subProcessoId).
@@ -177,7 +182,7 @@ export async function upsertNode(input: {
     }
   }
 
-  revalidatePath('/dashboard/mapa')
+  revalidateAll()
   return { success: true }
 }
 
@@ -195,6 +200,8 @@ export async function updateNodePosition(input: { tipo: NodeType; id: number; po
     atividade:      () => prisma.atividade.update({ where: { id }, data: { posicaoX, posicaoY } }),
   }
   await map[tipo]()
+  // posição é meta-dado de UI — não precisa invalidar telas legadas.
+  revalidatePath('/dashboard/mapa')
   return { success: true }
 }
 
@@ -211,6 +218,6 @@ export async function deleteNode(input: { tipo: NodeType; id: number }) {
     case 'atividade':      await prisma.atividade.delete({ where: { id } }); break
   }
 
-  revalidatePath('/dashboard/mapa')
+  revalidateAll()
   return { success: true }
 }
